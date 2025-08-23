@@ -1,0 +1,111 @@
+server:
+  port: 9528
+  tomcat:
+    # Tomcat 最大工作线程数（并发处理请求能力）
+    threads.max: 50
+    # 最大连接数（含等待队列）
+    max-connections: 100
+    # HTTP Form 表单最大提交大小（防超大表单攻击）
+    max-http-form-post-size: 120MB
+    # 连接超时时间（60,000ms = 60秒）
+    connection-timeout: 60000
+
+mybatis-plus:
+  # XML 映射文件扫描路径
+  mapper-locations: classpath*:mapper/**/*.xml
+  global-config:
+    db-config:
+      # 逻辑删除标记值（1 表示已删除）
+      logic-delete-value: 1
+      # 逻辑未删除标记值（0 表示未删除）
+      logic-not-delete-value: 0
+  configuration:
+    # 启用控制台 SQL 日志输出（调试用）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+spring:
+  servlet:
+    multipart:
+      # 单个文件最大大小限制
+      max-file-size: 100MB
+      # 单次请求总文件大小限制
+      max-request-size: 100MB
+
+  # 邮件服务配置
+  mail:
+    # QQ 邮箱 SMTP 服务器
+    host: smtp.qq.com
+    # 邮箱账号
+    username:
+    # 邮箱授权码
+    password:
+    # 邮件编码
+    default-encoding: utf-8
+    # 使用 SMTP 协议
+    protocol: smtp
+    # SSL 加密端口
+    port: 465
+    properties:
+      mail:
+        smtp:
+          socketFactory:
+            # SSL Socket 端口
+            port: 465
+            # 使用 SSL 加密
+            class: javax.net.ssl.SSLSocketFactory
+          ssl:
+            # 强制启用 SSL
+            enable: true
+
+  datasource:
+    username: root
+    password:
+    url: jdbc:mysql://localhost:3306/mowen?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    # 使用 Druid 连接池
+    type: com.alibaba.druid.pool.DruidDataSource
+    # MySQL JDBC 驱动
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      # 设置会话时区
+      connection-init-sqls: SET time_zone = '+8:00'
+  jackson:
+    # 全局时区配置
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+# 用户相关配置
+user:
+  code:
+    # 验证码格式规则
+    format: "^\\d{6}$" # 六位数字
+    expire-time: 300 # 5分钟有效期
+    max-attempts: 5 # 最大尝试次数
+  subscribe:
+    # 订阅信息格式
+    format: "yyyy-MM-dd"
+
+# 存储类型（如 local/qiniu，未填写）
+store:
+  type: qiniu
+
+# 本地存储
+local:
+  # 是否启用本地存储
+  enable: false
+  # 本地文件上传路径
+  uploadUrl: /data/uploads
+  # 本地文件下载 URL 前缀
+  downloadUrl: /uploads
+
+# 七牛云存储
+qiniu:
+  # 是否启用七牛云
+  enable: true
+  # 七牛 AccessKey
+  accessKey:
+  # 七牛 SecretKey
+  secretKey:
+  # 七牛存储桶名称
+  bucket:
+  # 七牛文件下载域名
+  downloadUrl:
