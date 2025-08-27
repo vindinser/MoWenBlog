@@ -184,7 +184,9 @@
               {{photoPagination.classify}}
             </div>
 
-            <photo :resourcePathList="photoList"></photo>
+            <div class="photo-container">
+              <photo :resourcePathList="photoList"></photo>
+            </div>
             <div class="pagination-wrap">
               <div @click="pagePhotos()" class="pagination" v-if="photoPagination.total !== photoList.length">
                 下一页
@@ -1017,17 +1019,22 @@
     text-align: center;
     font-size: 30px;
     font-weight: 700;
-    line-height: 80px;
+    line-height: 50px;
     letter-spacing: 2px;
   }
 
   .photo-title-warp {
     max-width: 1150px;
-    margin: 50px auto;
-    padding: 20px;
+    margin: 30px auto 15px;
+    padding: 10px;
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
+  }
+
+  .photo-container {
+    max-width: 1170px;
+    margin: auto;
   }
 
   .isActive {
@@ -1248,6 +1255,10 @@
 
     .photo-title-warp {
       max-width: 780px;
+    }
+
+    .photo-container {
+      max-width: 800px;
     }
 
     .family-button {

@@ -19,6 +19,7 @@ CREATE TABLE `mowen`.`user` (
   `subscribe` text DEFAULT NULL COMMENT '订阅',
   `introduction` varchar(4096) DEFAULT NULL COMMENT '简介',
   `user_type` tinyint(2) NOT NULL DEFAULT 2 COMMENT '用户类型[0:admin，1:管理员，2:普通用户]',
+  `user_lv` tinyint(2) NOT NULL DEFAULT 1 COMMENT '用户等级',
 
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最终修改时间',
@@ -42,8 +43,8 @@ CREATE TABLE `mowen`.`article` (
   `video_url` varchar(1024) DEFAULT NULL COMMENT '视频链接',
   `view_count` int NOT NULL DEFAULT 0 COMMENT '浏览量',
   `like_count` int NOT NULL DEFAULT 0 COMMENT '点赞数',
-  `view_status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否可见[0:否，1:是]',
-  `password` varchar(128) DEFAULT NULL COMMENT '密码',
+  `view_type` varchar(16) NOT NULL DEFAULT 'public' COMMENT '访问类型',
+  `view_value` varchar(128) DEFAULT NULL COMMENT '访问条件',
   `tips` varchar(128) DEFAULT NULL COMMENT '提示',
   `recommend_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否推荐[0:否，1:是]',
   `comment_status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否启用评论[0:否，1:是]',
@@ -309,7 +310,7 @@ CREATE TABLE `mowen`.`im_chat_user_group_message` (
 
 
 
-INSERT INTO `mowen`.`user`(`id`, `username`, `password`, `phone_number`, `email`, `user_status`, `gender`, `open_id`, `admire`, `subscribe`, `avatar`, `introduction`, `user_type`, `update_by`, `deleted`) VALUES (1, 'ZS', '47bce5c74f589f4867dbd57e9ca9f808', '', '', 1, 1, '', '', '', '', '', 0, 'Sara', 0);
+INSERT INTO `mowen`.`user`(`id`, `username`, `password`, `phone_number`, `email`, `user_status`, `gender`, `open_id`, `admire`, `subscribe`, `avatar`, `introduction`, `user_type`, `user_lv`, `update_by`, `deleted`) VALUES (1, 'ZS', '47bce5c74f589f4867dbd57e9ca9f808', '', '', 1, 1, '', '', '', '', '', 0, 6, 'ZS', 0);
 
 INSERT INTO `mowen`.`web_info`(`id`, `web_name`, `web_title`, `notices`, `footer`, `background_image`, `avatar`, `random_avatar`, `random_name`, `random_cover`, `waifu_json`, `status`) VALUES (1, 'ZS', 'MOWEN', '[]', '物来顺应,未来不迎,当时不杂,既过不恋。', '', '', '[]', '[]', '[]', '{}', 1);
 
@@ -329,7 +330,7 @@ INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_val
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (5, '默认存储平台', 'store.type', 'qiniu', '2');
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (6, '本地存储启用状态', 'local.enable', 'false', '2');
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (7, '七牛云存储启用状态', 'qiniu.enable', 'true', '2');
-INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (8, '本地存储上传文件根目录', 'local.uploadUrl', '/home/file/', '1');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (8, '本地存储上传文件根目录', 'local.uploadUrl', '/home/mowen/file/', '1');
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (9, '本地存储下载前缀', 'local.downloadUrl', '/static/', '2');
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (10, '七牛云-accessKey', 'qiniu.accessKey', '', '1');
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (11, '七牛云-secretKey', 'qiniu.secretKey', '', '1');
@@ -339,3 +340,10 @@ INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_val
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (16, '七牛云上传地址', 'qiniuUrl', 'https://upload.qiniup.com', '2');
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (17, '备案号', 'beian', '', '2');
 INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (18, '前端静态资源路径前缀', 'webStaticResourcePrefix', '/static/', '2');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (19, '导航栏菜单显示', 'bar.menu.show', '首页,记录,家,随笔,旅拍,百宝箱,留言,联系我,后台', '2');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (20, '邮箱通知启用状态', 'mail.enable', 'true', '1');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (21, '友链-网站名称', 'friendWebName', 'MOWEN', '2');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (22, '友链-网址', 'friendUrl', 'http://blog.zsawxotot.site', '2');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (23, '友链-头像', 'friendAvatar', 'http://qncdn.zsawxotot.site/webAvatar/zhangshuang117553345219565.jpg', '2');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (24, '友链-描述', 'friendIntroduction', '玄牝之门，是谓天地根。欢迎来到代码的世界！', '2');
+INSERT INTO `mowen`.`sys_config` (`id`, `config_name`, `config_key`, `config_value`, `config_type`) VALUES (25, '友链-网站封面', 'friendCover', 'http://qncdn.zsawxotot.site/webBackgroundImage/zhangshuang11755334510431677.jpg', '2');

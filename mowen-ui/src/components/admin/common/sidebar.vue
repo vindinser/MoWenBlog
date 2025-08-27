@@ -50,7 +50,7 @@
   export default {
     data() {
       return {
-        isCollapse: true,
+        isCollapse: this.$common.mobile(),
         isBoss: this.$store.state.currentAdmin.isBoss,
         items: [{
           icon: "el-icon-s-home",
@@ -120,14 +120,14 @@
     },
 
     mounted() {
-
+      this.collapse();
     },
 
     methods: {
       collapse() {
         if (this.isCollapse) {
-          $(".sidebar").css("width", "45px");
-          $(".content-box").css("left", "45px");
+          $(".sidebar").css("width", "44px");
+          $(".content-box").css("left", "44px");
         } else {
           $(".sidebar").css("width", "130px");
           $(".content-box").css("left", "130px");
@@ -149,6 +149,7 @@
     overflow-y: scroll;
     width: 130px;
     user-select: none;
+    overflow-x: hidden;
   }
 
   .sidebar::-webkit-scrollbar {

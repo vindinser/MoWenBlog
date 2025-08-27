@@ -67,12 +67,12 @@
     position: relative;
     overflow: hidden;
     margin: 15px;
-    height: 550px;
+    height: 450px;
     flex-shrink: 0;
     width: calc(100% / 3 - 30px);
     cursor: pointer;
     animation: zoomIn 0.8s ease-in-out;
-    padding: 1.3rem 1.3rem 1.5rem;
+    padding: 0.7rem;
     background: var(--background);
     border-radius: 1.5rem;
     transition: all 0.2s;
@@ -80,7 +80,7 @@
 
   .card-image {
     width: 100%;
-    height: 400px;
+    height: 360px;
     border-radius: 1rem;
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(147, 147, 147, 0.61);
@@ -96,7 +96,7 @@
   }
 
   .card-body {
-    padding: 10px 5px;
+    padding: 0 5px 5px;
   }
 
   .card-desc {
@@ -104,17 +104,17 @@
     font-size: 1.05rem;
     color: var(--fontColor);
     letter-spacing: 1px;
-    line-height: 1.5;
+    line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
 
   .card-time {
     position: absolute;
-    bottom: 15px;
+    bottom: 10px;
     color: #999999;
     font-weight: 500;
   }
@@ -127,11 +127,11 @@
 
   @media screen and (max-width: 1000px) {
     .card-item {
-      height: 450px;
+      height: 350px;
     }
 
     .card-image {
-      height: 300px;
+      height: 260px;
     }
   }
 
@@ -144,11 +144,11 @@
 
   @media screen and (max-width: 450px) {
     .card-item {
-      height: 400px;
+      height: 300px;
     }
 
     .card-image {
-      height: 250px;
+      height: 210px;
     }
   }
 

@@ -40,7 +40,7 @@
           <div style="display: flex;justify-content: space-between">
             <div>
               <span class="commentInfo-username">{{ item.username }}</span>
-              <span class="commentInfo-master" v-if="item.userId === userId">主人翁</span>
+              <span class="commentInfo-master">{{ item.createTimeLv }}</span>
               <span class="commentInfo-other">{{ $common.getDateDiff(item.createTime) }}</span>
             </div>
             <div class="commentInfo-reply" @click="replyDialog(item, item)">
@@ -62,7 +62,7 @@
                 <div style="display: flex;justify-content: space-between">
                   <div>
                     <span class="commentInfo-username-small">{{ childItem.username }}</span>
-                    <span class="commentInfo-master" v-if="childItem.userId === userId">主人翁</span>
+                    <span class="commentInfo-master">{{ childItem.createTimeLv }}</span>
                     <span class="commentInfo-other">{{ $common.getDateDiff(childItem.createTime) }}</span>
                   </div>
                   <div>
@@ -180,6 +180,7 @@
           .then((res) => {
             if (!this.$common.isEmpty(res.data)) {
               this.total = res.data;
+              this.$emit("change", this.total);
             }
           })
           .catch((error) => {

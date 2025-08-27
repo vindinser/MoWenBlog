@@ -1,12 +1,13 @@
 <template>
   <div>
     <div style="margin-bottom: 20px">
-      <el-select v-if="isBoss" v-model="pagination.commentType" placeholder="评论来源类型" style="margin-right: 10px">
+      <el-select v-if="isBoss" v-model="pagination.commentType" placeholder="评论来源类型" style="margin-right: 10px;margin-bottom: 10px">
         <el-option key="1" label="文章评论" value="article"></el-option>
         <el-option key="2" label="树洞留言" value="message"></el-option>
         <el-option key="3" label="家庭祝福" value="love"></el-option>
+        <el-option key="4" label="随笔评论" value="jotting"></el-option>
       </el-select>
-      <el-input class="my-input" type="number" style="width: 140px;margin-right: 10px" v-model="pagination.source"
+      <el-input class="my-input" type="number" style="width: 140px;margin-right: 10px;margin-bottom: 10px" v-model="pagination.source"
                 placeholder="评论来源标识"></el-input>
       <el-button type="primary" icon="el-icon-search" @click="searchComments()">搜索</el-button>
       <el-button type="danger" @click="clearSearch()">清除参数</el-button>
@@ -30,6 +31,7 @@
     </el-table>
     <div class="pagination">
       <el-pagination background layout="total, prev, pager, next"
+                     :pager-count="5"
                      :current-page="pagination.current"
                      :page-size="pagination.size"
                      :total="pagination.total"

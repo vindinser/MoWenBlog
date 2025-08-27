@@ -129,21 +129,33 @@ export default {
         return;
       }
 
-      this.$http.post(this.$constant.baseURL + "/sysConfig/saveOrUpdateConfig", this.config, true)
-        .then((res) => {
-          this.$message({
-            message: "保存成功！",
-            type: "success"
+      this.$confirm('编辑后需要重启MOWEN服务，确认编辑？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success',
+        center: true
+      }).then(() => {
+        this.$http.post(this.$constant.baseURL + "/sysConfig/saveOrUpdateConfig", this.config, true)
+          .then((res) => {
+            this.$message({
+              message: "保存成功！",
+              type: "success"
+            });
+            this.getConfigInfo();
+            this.handleClose();
+          })
+          .catch((error) => {
+            this.$message({
+              message: error.message,
+              type: "error"
+            });
           });
-          this.getConfigInfo();
-          this.handleClose();
-        })
-        .catch((error) => {
-          this.$message({
-            message: error.message,
-            type: "error"
-          });
+      }).catch(() => {
+        this.$message({
+          type: 'success',
+          message: '已取消编辑!'
         });
+      });
     },
     editConfig(config) {
       this.configDialog = true;

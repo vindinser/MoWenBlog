@@ -36,11 +36,11 @@ public class ArticleVO {
 
     private String videoUrl;
 
-    private String password;
+    private String viewValue;
 
     private String tips;
 
-    private Boolean viewStatus;
+    private String viewType;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

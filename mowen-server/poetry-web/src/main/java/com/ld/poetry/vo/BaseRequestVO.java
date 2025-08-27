@@ -20,6 +20,8 @@ public class BaseRequestVO extends Page {
 
     private String articleSearch;
 
+    private String viewType;
+
     // 是否推荐[0:否，1:是]
     private Boolean recommendStatus;
 
@@ -30,6 +32,8 @@ public class BaseRequestVO extends Page {
     private Boolean userStatus;
 
     private Integer userType;
+
+    private Integer userLv;
 
     private Integer userId;
 

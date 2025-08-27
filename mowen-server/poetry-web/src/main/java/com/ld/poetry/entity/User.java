@@ -101,6 +101,12 @@ public class User implements Serializable {
     private Integer userType;
 
     /**
+     * 用户等级
+     */
+    @TableField("user_lv")
+    private Integer userLv;
+
+    /**
      * 创建时间
      */
     @TableField("create_time")

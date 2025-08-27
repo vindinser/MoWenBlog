@@ -209,3 +209,18 @@
         opacity: 0
     }
 }
+
+/* 由左开向右 */
+@keyframes passingShow {
+    0% {
+        transform: translateX(-200%);
+    }
+
+    50% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(200%);
+    }
+}

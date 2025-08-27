@@ -18,7 +18,7 @@
             </div>
           </div>
         </div>
-        <div style="position: absolute;left: 20px;bottom: 40px;margin: 10px">
+        <div style="position: absolute;left: 20px;bottom: 20px;margin: 10px">
           每一张照片都是一次美好的记忆。
         </div>
       </div>
@@ -166,7 +166,7 @@
 
   .travel-header {
     margin: 60px auto 30px;
-    height: 300px;
+    height: 200px;
     position: relative;
     overflow: hidden;
     border-radius: 20px;
@@ -189,8 +189,8 @@
 
   .photo-title-warp {
     max-width: 1150px;
-    margin: 50px auto;
-    padding: 20px;
+    margin: 30px auto 15px;
+    padding: 10px;
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
@@ -204,7 +204,7 @@
     text-align: center;
     font-size: 30px;
     font-weight: 700;
-    line-height: 80px;
+    line-height: 50px;
     letter-spacing: 2px;
   }
 

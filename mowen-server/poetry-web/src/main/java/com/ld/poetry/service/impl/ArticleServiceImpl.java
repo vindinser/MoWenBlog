@@ -15,7 +15,9 @@ import com.ld.poetry.dao.SortMapper;
 import com.ld.poetry.entity.*;
 import com.ld.poetry.enums.CommentTypeEnum;
 import com.ld.poetry.enums.PoetryEnum;
+import com.ld.poetry.enums.ViewTypeEnum;
 import com.ld.poetry.service.ArticleService;
+import com.ld.poetry.service.CommentService;
 import com.ld.poetry.service.UserService;
 import com.ld.poetry.utils.*;
 import com.ld.poetry.utils.cache.PoetryCache;
@@ -63,13 +65,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     private LabelMapper labelMapper;
 
+    @Autowired
+    private CommentService commentService;
+
     @Value("${user.subscribe.format}")
     private String subscribeFormat;
 
     @Override
     public PoetryResult saveArticle(ArticleVO articleVO) {
-        if (articleVO.getViewStatus() != null && !articleVO.getViewStatus() && !StringUtils.hasText(articleVO.getPassword())) {
-            return PoetryResult.fail("请设置文章密码！");
+        if (ViewTypeEnum.getEnumByCode(articleVO.getViewType()) == null ||
+                ((ViewTypeEnum.VIEW_TYPE_PASSWORD.getCode().equals(articleVO.getViewType()) ||
+                        ViewTypeEnum.VIEW_TYPE_USER_LV.getCode().equals(articleVO.getViewType())) &&
+                        !StringUtils.hasText(articleVO.getViewValue()))) {
+            return PoetryResult.fail("请设置文章访问参数！");
         }
         Article article = new Article();
         if (StringUtils.hasText(articleVO.getArticleCover())) {
@@ -78,11 +86,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (StringUtils.hasText(articleVO.getVideoUrl())) {
             article.setVideoUrl(articleVO.getVideoUrl());
         }
-        if (articleVO.getViewStatus() != null && !articleVO.getViewStatus() && StringUtils.hasText(articleVO.getPassword())) {
-            article.setPassword(articleVO.getPassword());
+        if (!ViewTypeEnum.VIEW_TYPE_PUBLIC.getCode().equals(articleVO.getViewType())) {
+            article.setViewValue(articleVO.getViewValue());
             article.setTips(articleVO.getTips());
         }
-        article.setViewStatus(articleVO.getViewStatus());
+        article.setViewType(articleVO.getViewType());
         article.setCommentStatus(articleVO.getCommentStatus());
         article.setRecommendStatus(articleVO.getRecommendStatus());
         article.setArticleTitle(articleVO.getArticleTitle());
@@ -95,7 +103,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         PoetryCache.remove(CommonConst.SORT_INFO);
 
         try {
-            if (articleVO.getViewStatus()) {
+            if (ViewTypeEnum.VIEW_TYPE_PUBLIC.getCode().equals(articleVO.getViewType())) {
                 List<User> users = userService.lambdaQuery().select(User::getEmail, User::getSubscribe).eq(User::getUserStatus, PoetryEnum.STATUS_ENABLE.getCode()).list();
                 List<String> emails = users.stream().filter(u -> {
                     List<Integer> sub = JSON.parseArray(u.getSubscribe(), Integer.class);
@@ -107,7 +115,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     Label label = wrapper.select(Label::getLabelName).eq(Label::getId, articleVO.getLabelId()).one();
                     String text = getSubscribeMail(label.getLabelName(), articleVO.getArticleTitle());
                     WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
-                    mailUtil.sendMailMessage(emails, "您有一封来自" + (webInfo == null ? "POETIZE" : webInfo.getWebName()) + "的回执！", text);
+                    mailUtil.sendMailMessage(emails, "您有一封来自" + (webInfo == null ? "MOWEN" : webInfo.getWebName()) + "的回执！", text);
                 }
             }
         } catch (Exception e) {
@@ -118,7 +126,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     private String getSubscribeMail(String labelName, String articleTitle) {
         WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
-        String webName = (webInfo == null ? "POETIZE" : webInfo.getWebName());
+        String webName = (webInfo == null ? "MOWEN" : webInfo.getWebName());
         return String.format(mailUtil.getMailText(),
                 webName,
                 String.format(MailUtil.notificationMail, PoetryUtil.getAdminUser().getUsername()),
@@ -131,17 +139,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public PoetryResult deleteArticle(Integer id) {
         Integer userId = PoetryUtil.getUserId();
-        lambdaUpdate().eq(Article::getId, id)
+        boolean remove = lambdaUpdate().eq(Article::getId, id)
                 .eq(Article::getUserId, userId)
                 .remove();
+        if (remove) {
+            commentService.lambdaUpdate().eq(Comment::getSource, id)
+                    .eq(Comment::getType, CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode())
+                    .remove();
+        }
         PoetryCache.remove(CommonConst.SORT_INFO);
         return PoetryResult.success();
     }
 
     @Override
     public PoetryResult updateArticle(ArticleVO articleVO) {
-        if (articleVO.getViewStatus() != null && !articleVO.getViewStatus() && !StringUtils.hasText(articleVO.getPassword())) {
-            return PoetryResult.fail("请设置文章密码！");
+        if (ViewTypeEnum.getEnumByCode(articleVO.getViewType()) == null ||
+                ((ViewTypeEnum.VIEW_TYPE_PASSWORD.getCode().equals(articleVO.getViewType()) ||
+                        ViewTypeEnum.VIEW_TYPE_USER_LV.getCode().equals(articleVO.getViewType())) &&
+                        !StringUtils.hasText(articleVO.getViewValue()))) {
+            return PoetryResult.fail("请设置文章访问参数！");
         }
 
         Integer userId = PoetryUtil.getUserId();
@@ -154,7 +170,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .set(Article::getUpdateBy, PoetryUtil.getUsername())
                 .set(Article::getUpdateTime, LocalDateTime.now())
                 .set(Article::getVideoUrl, StringUtils.hasText(articleVO.getVideoUrl()) ? articleVO.getVideoUrl() : null)
-                .set(Article::getArticleContent, articleVO.getArticleContent());
+                .set(Article::getArticleContent, articleVO.getArticleContent())
+                .set(Article::getViewType, articleVO.getViewType());
 
         if (StringUtils.hasText(articleVO.getArticleCover())) {
             updateChainWrapper.set(Article::getArticleCover, articleVO.getArticleCover());
@@ -165,15 +182,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (articleVO.getRecommendStatus() != null) {
             updateChainWrapper.set(Article::getRecommendStatus, articleVO.getRecommendStatus());
         }
-        if (articleVO.getViewStatus() != null && !articleVO.getViewStatus() && StringUtils.hasText(articleVO.getPassword())) {
-            updateChainWrapper.set(Article::getPassword, articleVO.getPassword());
+        if (!ViewTypeEnum.VIEW_TYPE_PUBLIC.getCode().equals(articleVO.getViewType())) {
+            updateChainWrapper.set(Article::getViewValue, articleVO.getViewValue());
             updateChainWrapper.set(StringUtils.hasText(articleVO.getTips()), Article::getTips, articleVO.getTips());
-        }
-        if (articleVO.getViewStatus() != null) {
-            updateChainWrapper.set(Article::getViewStatus, articleVO.getViewStatus());
         }
         updateChainWrapper.update();
         PoetryCache.remove(CommonConst.SORT_INFO);
+        PoetryCache.remove(CommonConst.ARTICLE_INFO + articleVO.getId().toString());
         return PoetryResult.success();
     }
 
@@ -213,12 +228,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             List<ArticleVO> contents = new ArrayList<>();
 
             for (Article article : records) {
-                if (article.getArticleContent().length() > CommonConst.SUMMARY) {
-                    article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY).replace("`", "").replace("#", "").replace(">", ""));
+                if (article.getArticleContent().length() > CommonConst.SUMMARY && ViewTypeEnum.VIEW_TYPE_PUBLIC.getCode().equals(article.getViewType())) {
+                    article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY));
+                } else if (!ViewTypeEnum.VIEW_TYPE_PUBLIC.getCode().equals(article.getViewType())) {
+                    article.setArticleContent(CommonConst.ARTICLE_VIEW_TIPS);
                 }
+                article.setArticleContent(article.getArticleContent().replace("#", "").replace(">", ""));
                 ArticleVO articleVO = buildArticleVO(article, false);
                 articleVO.setHasVideo(StringUtils.hasText(articleVO.getVideoUrl()));
-                articleVO.setPassword(null);
+                articleVO.setViewValue(null);
                 articleVO.setVideoUrl(null);
                 if (CollectionUtils.isEmpty(ids)) {
                     articles.add(articleVO);
@@ -240,19 +258,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     @ResourceCheck(CommonConst.RESOURCE_ARTICLE_DOC)
-    public PoetryResult<ArticleVO> getArticleById(Integer id, String password) {
-        LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
-        lambdaQuery.eq(Article::getId, id);
-
-        Article article = lambdaQuery.one();
+    public PoetryResult<ArticleVO> getArticleById(Integer id, String viewValue) {
+        Article article = lambdaQuery().eq(Article::getId, id).one();
         if (article == null) {
-            return PoetryResult.success();
-        }
-        if (!article.getViewStatus() && (!StringUtils.hasText(password) || !password.equals(article.getPassword()))) {
-            return PoetryResult.fail("密码错误" + (StringUtils.hasText(article.getTips()) ? article.getTips() : "请联系作者获取密码"));
+            return PoetryResult.fail("文章不存在！");
         }
         articleMapper.updateViewCount(id);
-        article.setPassword(null);
+        article.setViewValue(null);
         if (StringUtils.hasText(article.getVideoUrl())) {
             article.setVideoUrl(SecureUtil.aes(CommonConst.CRYPOTJS_KEY.getBytes(StandardCharsets.UTF_8)).encryptBase64(article.getVideoUrl()));
         }
@@ -277,7 +289,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (baseRequestVO.getRecommendStatus() != null && baseRequestVO.getRecommendStatus()) {
             lambdaQuery.eq(Article::getRecommendStatus, PoetryEnum.STATUS_ENABLE.getCode());
         }
-
+        if (StringUtils.hasText(baseRequestVO.getViewType())) {
+            lambdaQuery.eq(Article::getViewType, baseRequestVO.getViewType());
+        }
         if (baseRequestVO.getLabelId() != null) {
             lambdaQuery.eq(Article::getLabelId, baseRequestVO.getLabelId());
         }
@@ -291,7 +305,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         List<Article> records = baseRequestVO.getRecords();
         if (!CollectionUtils.isEmpty(records)) {
             List<ArticleVO> collect = records.stream().map(article -> {
-                article.setPassword(null);
+                article.setViewValue(null);
                 ArticleVO articleVO = buildArticleVO(article, true);
                 return articleVO;
             }).collect(Collectors.toList());
@@ -325,7 +339,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             if (result == null) {
                 Map<Integer, List<ArticleVO>> map = new HashMap<>();
 
-                List<Sort> sorts = new LambdaQueryChainWrapper<>(sortMapper).select(Sort::getId).list();
+                List<Sort> sorts = new LambdaQueryChainWrapper<>(sortMapper).select(Sort::getId).eq(Sort::getSortType, PoetryEnum.SORT_TYPE_BAR.getCode()).list();
                 for (Sort sort : sorts) {
                     LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery()
                             .eq(Article::getSortId, sort.getId())
@@ -337,13 +351,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     }
 
                     List<ArticleVO> articleVOList = articleList.stream().map(article -> {
-                        if (article.getArticleContent().length() > CommonConst.SUMMARY) {
-                            article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY).replace("`", "").replace("#", "").replace(">", ""));
+                        if (article.getArticleContent().length() > CommonConst.SUMMARY && ViewTypeEnum.VIEW_TYPE_PUBLIC.getCode().equals(article.getViewType())) {
+                            article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY));
+                        } else if (!ViewTypeEnum.VIEW_TYPE_PUBLIC.getCode().equals(article.getViewType())) {
+                            article.setArticleContent(CommonConst.ARTICLE_VIEW_TIPS);
                         }
+                        article.setArticleContent(article.getArticleContent().replace("#", "").replace(">", ""));
 
                         ArticleVO vo = buildArticleVO(article, false);
                         vo.setHasVideo(StringUtils.hasText(article.getVideoUrl()));
-                        vo.setPassword(null);
+                        vo.setViewValue(null);
                         vo.setVideoUrl(null);
                         return vo;
                     }).collect(Collectors.toList());
@@ -370,8 +387,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         User user = commonQuery.getUser(articleVO.getUserId());
         if (user != null && StringUtils.hasText(user.getUsername())) {
             articleVO.setUsername(user.getUsername());
-        } else if (!isAdmin) {
-            articleVO.setUsername(PoetryUtil.getRandomName(articleVO.getUserId().toString()));
         }
         if (articleVO.getCommentStatus()) {
             articleVO.setCommentCount(commonQuery.getCommentCount(articleVO.getId(), CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode()));

@@ -72,5 +72,12 @@ public class WeiYan implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
 
-
+    @TableField(exist = false)
+    private Integer commentCount;
+    @TableField(exist = false)
+    private String username;
+    @TableField(exist = false)
+    private String avatar;
+    @TableField(exist = false)
+    private String createTimeLv = "平民";
 }

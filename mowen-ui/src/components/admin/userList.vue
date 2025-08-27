@@ -11,6 +11,14 @@
           <el-option key="1" label="启用" :value="true"></el-option>
           <el-option key="2" label="禁用" :value="false"></el-option>
         </el-select>
+        <el-select v-model="pagination.userLv" placeholder="用户等级" class="handle-select mrb10">
+          <el-option key="1" label="VIP1" :value="1"></el-option>
+          <el-option key="2" label="VIP2" :value="2"></el-option>
+          <el-option key="3" label="VIP3" :value="3"></el-option>
+          <el-option key="4" label="VIP4" :value="4"></el-option>
+          <el-option key="5" label="VIP5" :value="5"></el-option>
+          <el-option key="6" label="VIP6" :value="6"></el-option>
+        </el-select>
         <el-input v-model="pagination.searchKey" placeholder="用户名/手机号/邮箱" class="handle-input mrb10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="searchUser()">搜索</el-button>
         <el-button type="danger" @click="clearSearch()">清除参数</el-button>
@@ -24,6 +32,52 @@
           <template slot-scope="scope">
             <el-input size="medium" maxlength="30" v-model="scope.row.admire"
                       @blur="changeUserAdmire(scope.row)"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户等级" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag type="success"
+                    v-if="scope.row.userLv === 6"
+                    style="cursor: pointer"
+                    @click.native="editVipUser(scope.row)"
+                    disable-transitions>
+              VIP6
+            </el-tag>
+            <el-tag type="success"
+                    v-else-if="scope.row.userLv === 5"
+                    style="cursor: pointer"
+                    @click.native="editVipUser(scope.row)"
+                    disable-transitions>
+              VIP5
+            </el-tag>
+            <el-tag type="success"
+                    v-else-if="scope.row.userLv === 4"
+                    style="cursor: pointer"
+                    @click.native="editVipUser(scope.row)"
+                    disable-transitions>
+              VIP4
+            </el-tag>
+            <el-tag type="success"
+                    v-else-if="scope.row.userLv === 3"
+                    style="cursor: pointer"
+                    @click.native="editVipUser(scope.row)"
+                    disable-transitions>
+              VIP3
+            </el-tag>
+            <el-tag type="success"
+                    v-else-if="scope.row.userLv === 2"
+                    style="cursor: pointer"
+                    @click.native="editVipUser(scope.row)"
+                    disable-transitions>
+              VIP2
+            </el-tag>
+            <el-tag type="success"
+                    v-else
+                    style="cursor: pointer"
+                    @click.native="editVipUser(scope.row)"
+                    disable-transitions>
+              VIP1
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="用户状态" align="center">
@@ -87,6 +141,7 @@
       </el-table>
       <div class="pagination">
         <el-pagination background layout="total, prev, pager, next"
+                       :pager-count="5"
                        :current-page="pagination.current"
                        :page-size="pagination.size"
                        :total="pagination.total"
@@ -115,6 +170,31 @@
           <el-button type="primary" @click="saveEdit()">确 定</el-button>
         </span>
     </el-dialog>
+
+    <!-- 编辑弹出框 -->
+    <el-dialog title="修改用户等级"
+               :visible.sync="editVipVisible"
+               width="40%"
+               :before-close="handleClose"
+               :append-to-body="true"
+               destroy-on-close
+               center>
+      <div class="myCenter">
+        <el-radio-group size="small" v-model="changeUser.userLv">
+          <el-radio-button :label="1">VIP1</el-radio-button>
+          <el-radio-button :label="2">VIP2</el-radio-button>
+          <el-radio-button :label="3">VIP3</el-radio-button>
+          <el-radio-button :label="4">VIP4</el-radio-button>
+          <el-radio-button :label="5">VIP5</el-radio-button>
+          <el-radio-button :label="6">VIP6</el-radio-button>
+        </el-radio-group>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="handleClose()">取 消</el-button>
+          <el-button type="primary" @click="saveVipEdit()">确 定</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,14 +209,17 @@
           total: 0,
           searchKey: "",
           userStatus: null,
-          userType: null
+          userType: null,
+          userLv: null
         },
         users: [],
         changeUser: {
           id: null,
-          userType: null
+          userType: null,
+          userLv: null
         },
-        editVisible: false
+        editVisible: false,
+        editVipVisible: false
       }
     },
 
@@ -233,6 +316,18 @@
         this.changeUser.userType = user.userType;
         this.editVisible = true;
       },
+      editVipUser(user) {
+        if(user.userType === 0) {
+          this.$message({
+            message: "站长不能修改等级！",
+            type: "warning"
+          });
+          return;
+        }
+        this.changeUser.id = user.id;
+        this.changeUser.userLv = user.userLv;
+        this.editVipVisible = true;
+      },
       handlePageChange(val) {
         this.pagination.current = val;
         this.getUsers();
@@ -245,9 +340,31 @@
       handleClose() {
         this.changeUser = {
           id: null,
-          userType: null
+          userType: null,
+          userLv: null
         };
         this.editVisible = false;
+        this.editVipVisible = false;
+      },
+      saveVipEdit() {
+        this.$http.get(this.$constant.baseURL + "/admin/user/changeUserLv", {
+          userId: this.changeUser.id,
+          userLv: this.changeUser.userLv
+        }, true)
+          .then((res) => {
+            this.handleClose();
+            this.getUsers();
+            this.$message({
+              message: "修改成功！",
+              type: "success"
+            });
+          })
+          .catch((error) => {
+            this.$message({
+              message: error.message,
+              type: "error"
+            });
+          });
       },
       saveEdit() {
         this.$http.get(this.$constant.baseURL + "/admin/user/changeUserType", {

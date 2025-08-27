@@ -7,18 +7,26 @@ import com.ld.poetry.config.PoetryResult;
 import com.ld.poetry.aop.SaveCheck;
 import com.ld.poetry.dao.ArticleMapper;
 import com.ld.poetry.entity.Article;
+import com.ld.poetry.entity.Comment;
+import com.ld.poetry.entity.User;
 import com.ld.poetry.entity.WeiYan;
+import com.ld.poetry.enums.CommentTypeEnum;
+import com.ld.poetry.service.CommentService;
 import com.ld.poetry.service.WeiYanService;
 import com.ld.poetry.constants.CommonConst;
 import com.ld.poetry.enums.PoetryEnum;
+import com.ld.poetry.utils.CommonQuery;
+import com.ld.poetry.utils.LvUtil;
 import com.ld.poetry.utils.PoetryUtil;
 import com.ld.poetry.utils.StringUtil;
 import com.ld.poetry.vo.BaseRequestVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -37,6 +45,12 @@ public class WeiYanController {
 
     @Autowired
     private ArticleMapper articleMapper;
+
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private CommonQuery commonQuery;
 
     /**
      * 保存
@@ -123,9 +137,14 @@ public class WeiYanController {
     @LoginCheck
     public PoetryResult deleteWeiYan(@RequestParam("id") Integer id) {
         Integer userId = PoetryUtil.getUserId();
-        weiYanService.lambdaUpdate().eq(WeiYan::getId, id)
+        boolean remove = weiYanService.lambdaUpdate().eq(WeiYan::getId, id)
                 .eq(WeiYan::getUserId, userId)
                 .remove();
+        if (remove) {
+            commentService.lambdaUpdate().eq(Comment::getSource, id)
+                    .eq(Comment::getType, CommentTypeEnum.COMMENT_TYPE_JOTTING.getCode())
+                    .remove();
+        }
         return PoetryResult.success();
     }
 
@@ -152,6 +171,19 @@ public class WeiYanController {
         }
 
         lambdaQuery.orderByDesc(WeiYan::getCreateTime).page(baseRequestVO);
+
+        if (!CollectionUtils.isEmpty(baseRequestVO.getRecords())) {
+            List<WeiYan> records = baseRequestVO.getRecords();
+            records.forEach(w -> {
+                w.setCommentCount(commonQuery.getCommentCount(w.getId(), CommentTypeEnum.COMMENT_TYPE_JOTTING.getCode()));
+                User user = commonQuery.getUser(w.getUserId());
+                if (user != null) {
+                    w.setAvatar(user.getAvatar());
+                    w.setUsername(user.getUsername());
+                    w.setCreateTimeLv(LvUtil.getCreateTimeLv(user.getCreateTime(), LocalDateTime.now(), user.getId()));
+                }
+            });
+        }
         return PoetryResult.success(baseRequestVO);
     }
 }

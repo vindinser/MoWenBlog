@@ -130,6 +130,7 @@ export default {
           imgHeight = realHeight;
         }
         $("#bigImg").css("width", imgWidth);//以最终的宽度对图片缩放
+        $("#bigImg").css("border-radius", "6px");
 
         let w = (windowW - imgWidth) / 2;//计算图片与窗口左边距
         let h = (windowH - imgHeight) / 2;//计算图片与窗口上边距

@@ -496,6 +496,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             lambdaQuery.eq(User::getUserType, baseRequestVO.getUserType());
         }
 
+        if (baseRequestVO.getUserLv() != null) {
+            lambdaQuery.eq(User::getUserLv, baseRequestVO.getUserLv());
+        }
+
         if (StringUtils.hasText(baseRequestVO.getSearchKey())) {
             lambdaQuery.and(lq -> lq.like(User::getUsername, baseRequestVO.getSearchKey())
                     .or()

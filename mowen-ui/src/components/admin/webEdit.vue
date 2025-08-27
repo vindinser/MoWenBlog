@@ -12,7 +12,7 @@
         </svg>
         基础信息
       </el-tag>
-      <el-form :model="webInfo" :rules="rules" ref="ruleForm" label-width="100px"
+      <el-form :model="webInfo" :rules="rules" ref="ruleForm" label-width="80px"
                class="demo-ruleForm">
         <el-form-item label="网站名称" prop="webName">
           <el-input v-model="webInfo.webName"></el-input>
@@ -158,9 +158,7 @@
       <div :key="i"
            style="display: flex"
            v-for="(avatar, i) in randomAvatar">
-        <el-tag
-          style="white-space: normal;height: unset"
-          closable
+        <el-tag closable
           :disable-transitions="false"
           @close="handleClose(randomAvatar, avatar)">
           {{avatar}}
@@ -207,9 +205,7 @@
       <div :key="i"
            style="display: flex"
            v-for="(cover, i) in randomCover">
-        <el-tag
-          style="white-space: normal;height: unset"
-          closable
+        <el-tag closable
           :disable-transitions="false"
           @close="handleClose(randomCover, cover)">
           {{cover}}
@@ -507,8 +503,8 @@
 <style scoped>
 
   .my-tag {
-    margin-bottom: 20px !important;
-    width: 100%;
+    width: 100%!important;
+    max-width: 100%!important;
     text-align: left;
     background: var(--lightYellow);
     border: none;
@@ -516,9 +512,13 @@
     line-height: 40px;
     font-size: 16px;
     color: var(--black);
+    margin: 10px 0 20px!important;
   }
 
   .el-tag {
+    max-width: calc(100% - 20px);
+    white-space: unset;
+    height: unset;
     margin: 10px;
   }
 
@@ -531,7 +531,7 @@
   }
 
   .input-new-tag {
-    width: 200px;
+    max-width: calc(100% - 20px);
     margin: 10px;
   }
 

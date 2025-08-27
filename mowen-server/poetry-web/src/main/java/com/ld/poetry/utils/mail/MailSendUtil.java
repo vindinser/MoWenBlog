@@ -1,10 +1,7 @@
 package com.ld.poetry.utils.mail;
 
 import com.ld.poetry.constants.CommonConst;
-import com.ld.poetry.entity.Article;
-import com.ld.poetry.entity.Comment;
-import com.ld.poetry.entity.User;
-import com.ld.poetry.entity.WebInfo;
+import com.ld.poetry.entity.*;
 import com.ld.poetry.enums.CommentTypeEnum;
 import com.ld.poetry.im.http.entity.ImChatUserMessage;
 import com.ld.poetry.service.CommentService;
@@ -31,7 +28,7 @@ public class MailSendUtil {
     @Autowired
     private MailUtil mailUtil;
 
-    public void sendCommentMail(CommentVO commentVO, Article one, CommentService commentService) {
+    public void sendCommentMail(CommentVO commentVO, Article one, WeiYan yan, CommentService commentService) {
         List<String> mail = new ArrayList<>();
         String toName = "";
         if (commentVO.getParentUserId() != null) {
@@ -49,6 +46,11 @@ public class MailSendUtil {
                 }
             } else if (CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode().equals(commentVO.getType())) {
                 User user = commonQuery.getUser(one.getUserId());
+                if (user != null && StringUtils.hasText(user.getEmail()) && !user.getId().equals(PoetryUtil.getUserId())) {
+                    mail.add(user.getEmail());
+                }
+            } else if (CommentTypeEnum.COMMENT_TYPE_JOTTING.getCode().equals(commentVO.getType())) {
+                User user = commonQuery.getUser(yan.getUserId());
                 if (user != null && StringUtils.hasText(user.getEmail()) && !user.getId().equals(PoetryUtil.getUserId())) {
                     mail.add(user.getEmail());
                 }
@@ -103,6 +105,8 @@ public class MailSendUtil {
                 mailType = String.format(MailUtil.commentMail, source, fromName);
             } else if (CommentTypeEnum.COMMENT_TYPE_LOVE.getCode().equals(commentType)) {
                 mailType = String.format(MailUtil.loveMail, fromName);
+            } else if (CommentTypeEnum.COMMENT_TYPE_JOTTING.getCode().equals(commentType)) {
+                mailType = String.format(MailUtil.jottingMail, fromName);
             }
         }
 
@@ -134,7 +138,7 @@ public class MailSendUtil {
                 AtomicInteger count = (AtomicInteger) PoetryCache.get(CommonConst.COMMENT_IM_MAIL + mail.get(0));
                 if (count == null || count.get() < CommonConst.COMMENT_IM_MAIL_COUNT) {
                     WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
-                    mailUtil.sendMailMessage(mail, "您有一封来自" + (webInfo == null ? "POETIZE" : webInfo.getWebName()) + "的回执！", commentMail);
+                    mailUtil.sendMailMessage(mail, "您有一封来自" + (webInfo == null ? "MOWEN" : webInfo.getWebName()) + "的回执！", commentMail);
                     if (count == null) {
                         PoetryCache.put(CommonConst.COMMENT_IM_MAIL + mail.get(0), new AtomicInteger(1), CommonConst.CODE_EXPIRE);
                     } else {
@@ -147,7 +151,7 @@ public class MailSendUtil {
 
     private String getImMail(String fromName, String fromContent) {
         WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
-        String webName = (webInfo == null ? "POETIZE" : webInfo.getWebName());
+        String webName = (webInfo == null ? "MOWEN" : webInfo.getWebName());
 
         return String.format(mailUtil.getMailText(),
                 webName,

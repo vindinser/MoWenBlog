@@ -62,7 +62,7 @@ public class CommonConst {
     /**
      * Token重设过期时间间隔：1小时
      */
-    public static final long TOKEN_INTERVAL = 3600;
+    public static final long TOKEN_INTERVAL = 120;
 
     /**
      * Boss信息
@@ -145,6 +145,11 @@ public class CommonConst {
     public static final String USER_ARTICLE_LIST = "user_article_list_";
 
     /**
+     * 根据ID获取文章
+     */
+    public static final String ARTICLE_INFO = "article_info_";
+
+    /**
      * 文章缓存，用于搜索
      */
     public static final String ARTICLE_LIST = "article_list";
@@ -173,6 +178,11 @@ public class CommonConst {
      * 文章摘要默认字数
      */
     public static final int SUMMARY = 80;
+
+    /**
+     * 不可见文章摘要
+     */
+    public static final String ARTICLE_VIEW_TIPS = "加密文章";
 
     /**
      * 留言的源
@@ -213,6 +223,8 @@ public class CommonConst {
     public static final String PATH_TYPE_FUNNY_COVER = "funnyCover";
 
     public static final String PATH_TYPE_FAVORITES_COVER = "favoritesCover";
+
+    public static final String PATH_TYPE_LOVEPHOTO_COVER = "lovePhotoCover";
 
     public static final String PATH_TYPE_LOVE_COVER = "love/bgCover";
 

@@ -291,6 +291,11 @@ body {
     font-weight: bold;
 }
 
+.admin-content .pagination {
+    overflow-y: auto;
+    max-width: 100%;
+}
+
 
 @media screen and (max-width: 800px) {
     .el-dialog {

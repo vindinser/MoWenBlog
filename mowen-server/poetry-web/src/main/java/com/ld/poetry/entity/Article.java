@@ -71,10 +71,10 @@ public class Article implements Serializable {
     private String videoUrl;
 
     /**
-     * 密码
+     * 访问条件
      */
-    @TableField("password")
-    private String password;
+    @TableField("view_value")
+    private String viewValue;
 
     /**
      * 提示
@@ -83,10 +83,10 @@ public class Article implements Serializable {
     private String tips;
 
     /**
-     * 是否可见[0:否，1:是]
+     * 访问类型
      */
-    @TableField("view_status")
-    private Boolean viewStatus;
+    @TableField("view_type")
+    private String viewType;
 
     /**
      * 浏览量

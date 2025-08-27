@@ -92,8 +92,9 @@ public class ArticleController {
      * 查询文章
      */
     @GetMapping("/getArticleById")
-    public PoetryResult<ArticleVO> getArticleById(@RequestParam("id") Integer id, @RequestParam(value = "password", required = false) String password) {
-        return articleService.getArticleById(id, password);
+    public PoetryResult<ArticleVO> getArticleById(@RequestParam("id") Integer id,
+                                                  @RequestParam(value = "viewValue", required = false) String viewValue) {
+        return articleService.getArticleById(id, viewValue);
     }
 }
 

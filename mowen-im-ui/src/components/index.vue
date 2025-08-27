@@ -213,9 +213,8 @@
             <!-- 好友列表 -->
             <div style="overflow-y: scroll;height: calc(100% - 140px)">
               <div class="im-user"
-                   v-for="(item, index) in Object.values(friends).reverse()"
+                   v-for="(item, index) in friendWithSearch"
                    :key="index"
-                   v-show="item.remark.includes(showFriendValue) || $common.isEmpty(showFriendValue)"
                    @click="isActive($event, 'friend-active', null, 4, item)">
                 <div>
                   <n-avatar object-fit="cover"
@@ -592,7 +591,7 @@
   import uploadPicture from "./common/uploadPicture";
   import chat from "./common/chat";
   import groupInfo from "./common/groupInfo";
-  import {reactive, getCurrentInstance, onMounted, onBeforeUnmount, watchEffect, toRefs} from 'vue';
+  import {reactive, getCurrentInstance, computed, onMounted, onBeforeUnmount, watchEffect, toRefs} from 'vue';
 
   export default {
     components: {
@@ -615,7 +614,7 @@
       const {friendCircleData, launch, openFriendCircle, deleteTreeHole, submitWeiYan, pageWeiYan, cleanFriendCircle, addFriend} = friendCircle();
       const {friendData, getImFriend, removeFriend, getFriendRequests, changeFriendStatus} = friend();
       const {groupData, getImGroup, addGroupTopic, exitGroup, dissolveGroup} = group();
-      const {imUtilData, changeAside, mobileRight, getSystemMessages, hiddenBodyLeft, imgShow, getImageList, parseMessage} = imUtil();
+      const {imUtilData, changeAside, mobileRight, getSystemMessages, hiddenBodyLeft, getImageList, parseMessage} = imUtil();
       const {changeDataData, changeAvatar, changeDataType, submitAvatar, submitChange} = changeData(friendData, groupData);
 
       let data = reactive({
@@ -640,6 +639,15 @@
         type: 1,
         subType: 1,
         showFriendValue: ''
+      })
+
+      let friendWithSearch = computed(() => {
+        let friends = Object.values(friendData.friends).reverse();
+        let searchFriends = friends;
+        if (!$common.isEmpty(data.showFriendValue)) {
+          searchFriends = friends.filter(item => item.remark.includes(data.showFriendValue));
+        }
+        return searchFriends.length <= 20 ? searchFriends : searchFriends.slice(0, 20);
       })
 
       let im;
@@ -668,9 +676,9 @@
             }
           })
           .catch((error) => {
-            this.$message({
+            ElMessage({
               message: error.message,
-              type: "error"
+              type: 'error'
             });
           });
       }
@@ -734,7 +742,7 @@
               if (msgContainer && msgContainer.length > 0) {
                 msgContainer[0].scrollTop = msgContainer[0].scrollHeight;
               }
-              imgShow();
+              $common.imgShow(".message .pictureReg");
             });
           } else if (message.messageType === 2 && (groupData.groups[message.groupId] !== null && groupData.groups[message.groupId] !== undefined)) {
             if (data.groupMessages[message.groupId] === null || data.groupMessages[message.groupId] === undefined) {
@@ -766,7 +774,7 @@
               if (msgContainer && msgContainer.length > 0) {
                 msgContainer[0].scrollTop = msgContainer[0].scrollHeight;
               }
-              imgShow();
+              $common.imgShow(".message .pictureReg");
             });
           }
         }
@@ -813,7 +821,7 @@
             if (msgContainer && msgContainer.length > 0) {
               msgContainer[0].scrollTop = msgContainer[0].scrollHeight;
             }
-            imgShow();
+            $common.imgShow(".message .pictureReg");
             mobileRight();
             hiddenBodyLeft();
           });
@@ -883,7 +891,7 @@
                 if (msgContainer && msgContainer.length > 0) {
                   msgContainer[0].scrollTop = msgContainer[0].scrollHeight;
                 }
-                imgShow();
+                $common.imgShow(".message .pictureReg");
               });
             })
             .catch((error) => {
@@ -916,7 +924,7 @@
                 if (msgContainer && msgContainer.length > 0) {
                   msgContainer[0].scrollTop = msgContainer[0].scrollHeight;
                 }
-                imgShow();
+                $common.imgShow(".message .pictureReg");
               });
             })
             .catch((error) => {
@@ -936,6 +944,7 @@
         ...toRefs(groupData),
         ...toRefs(imUtilData),
         ...toRefs(changeDataData),
+        friendWithSearch,
         isActive,
         sendMsg,
         submitAvatar,
@@ -1117,6 +1126,7 @@
   .sendMsg .n-button {
     height: 35px;
     padding: 15px 25px;
+    margin: 20px;
   }
 
   .system-date {
@@ -1219,7 +1229,7 @@
   }
 
   .weiyan-edit {
-    width: 350px;
+    max-width: 350px;
     background-color: var(--background);
     border-radius: 10px;
     padding: 20px;

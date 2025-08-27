@@ -152,8 +152,12 @@
 
           <!-- 成员设置 -->
           <n-tab-pane name="群成员" tab="群成员" v-if="groups[currentGroupId].groupType === 1">
+            <!-- 搜索 -->
+            <div>
+              <n-input v-model:value="showGroupValue" round placeholder="搜索" class="group-input"></n-input>
+            </div>
             <div class="group-user"
-                 v-for="(item, index) in groupUsers"
+                 v-for="(item, index) in groupWithSearch"
                  :key="index">
               <!-- 成员信息 -->
               <div style="display: flex;align-items: center">
@@ -208,7 +212,7 @@
 
   import {ElMessage} from "element-plus";
 
-  import {reactive, getCurrentInstance, onMounted, onBeforeUnmount, watchEffect, toRefs} from 'vue';
+  import {reactive, getCurrentInstance, computed, onMounted, onBeforeUnmount, watchEffect, toRefs} from 'vue';
 
   export default {
     props: {
@@ -231,7 +235,16 @@
         //群成员
         groupUsers: [],
         //组设置
-        activeGroupSet: false
+        activeGroupSet: false,
+        showGroupValue: ''
+      })
+
+      let groupWithSearch = computed(() => {
+        let searchGroups = data.groupUsers;
+        if (!$common.isEmpty(data.showGroupValue)) {
+          searchGroups = data.groupUsers.filter(item => item.username.includes(data.showGroupValue));
+        }
+        return searchGroups.length <= 20 ? searchGroups : searchGroups.slice(0, 20);
       })
 
       function updateInType(currentGroupId, inType) {
@@ -319,6 +332,7 @@
 
       return {
         ...toRefs(data),
+        groupWithSearch,
         changeDataType,
         sendGroupMessage,
         groupSetting,
@@ -342,6 +356,12 @@
   .sendMsg .n-button {
     height: 35px;
     padding: 15px 25px;
+    margin: 20px;
+  }
+
+  .group-input {
+    margin: 13px;
+    width: 215px;
   }
 
   .group-set {

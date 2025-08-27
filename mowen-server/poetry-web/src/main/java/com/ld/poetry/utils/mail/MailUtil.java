@@ -40,6 +40,7 @@ public class MailUtil {
      */
     public static final String replyMail = "你之前的评论收到来自 %s 的回复";
     public static final String commentMail = "你的文章 %s 收到来自 %s 的评论";
+    public static final String jottingMail = "你的随笔收到来自 %s 的评论";
     public static final String messageMail = "你收到来自 %s 的留言";
     public static final String loveMail = "你收到来自 %s 的祝福";
     public static final String imMail = "你收到来自 %s 的消息";
@@ -50,6 +51,9 @@ public class MailUtil {
 
     @Value("${spring.mail.username}")
     private String sendMailer;
+
+    @Value("${mail.enable:false}")
+    private Boolean mailEnable;
 
     /**
      * 1. 网站名称
@@ -87,7 +91,7 @@ public class MailUtil {
                 "            %s\n" +
                 "            <a style=\"width: 150px;height: 38px;background: #ef859d38;border-radius: 32px;display: flex;align-items: center;justify-content: center;text-decoration: none;margin: 40px auto 0\"\n" +
                 "               href=\"http://blog.zsawxotot.site\" target=\"_blank\">\n" +
-                "                <span style=\"color: #DB214B\">有朋自远方来</span>\n" +
+                "                <span style=\"color: #DB214B\">以墨为媒，自此问始。</span>\n" +
                 "            </a>\n" +
                 "        </div>\n" +
                 "        <div style=\"margin-top: 20px;font-size: 12px;color: #00000045\">\n" +
@@ -103,6 +107,9 @@ public class MailUtil {
 
     @Async
     public void sendMailMessage(List<String> to, String subject, String text) {
+        if (!mailEnable) {
+            return;
+        }
         log.info("发送邮件===================");
         log.info("to：{}", JSON.toJSONString(to));
         log.info("subject：{}", subject);

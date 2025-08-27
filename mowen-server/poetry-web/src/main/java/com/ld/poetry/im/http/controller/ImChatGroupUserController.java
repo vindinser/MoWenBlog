@@ -382,8 +382,8 @@ public class ImChatGroupUserController {
             if (user != null) {
                 groupUserVO.setUsername(user.getUsername());
                 groupUserVO.setAvatar(user.getAvatar());
+                groupUserVOList.add(groupUserVO);
             }
-            groupUserVOList.add(groupUserVO);
         });
 
         Page<GroupUserVO> result = new Page<>();

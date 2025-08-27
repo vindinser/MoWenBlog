@@ -348,6 +348,10 @@
     .favorite-header {
       height: 500px;
     }
+
+    .favorite-container {
+      padding: 5px;
+    }
   }
 
   @media screen and (max-width: 400px) {

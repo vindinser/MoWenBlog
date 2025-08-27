@@ -24,13 +24,13 @@
         <!-- 导航列表 -->
         <div v-else>
           <ul class="scroll-menu">
-            <li @click="$router.push({path: '/'})">
+            <li @click="$router.push({path: '/'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('首页')">
               <div class="my-menu">
                 🏡 <span>首页</span>
               </div>
             </li>
 
-            <el-dropdown :hide-timeout="500" placement="bottom">
+            <el-dropdown :hide-timeout="500" placement="bottom" v-if="$store.state.sysConfig['bar.menu.show'].includes('记录')">
               <li>
                 <div class="my-menu">
                   📒 <span>记录</span>
@@ -46,42 +46,49 @@
             </el-dropdown>
 
             <!-- 家 -->
-            <li @click="$router.push({path: '/love'})">
+            <li @click="$router.push({path: '/love'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('家')">
               <div class="my-menu">
                 ❤️‍🔥 <span>家</span>
               </div>
             </li>
 
-<!--            &lt;!&ndash; 旅拍 &ndash;&gt;-->
-<!--            <li @click="$router.push({path: '/travel'})">-->
-<!--              <div class="my-menu">-->
-<!--                🌏 <span>旅拍</span>-->
-<!--              </div>-->
-<!--            </li>-->
+            <!-- 随笔 -->
+            <li @click="$router.push({path: '/jotting'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('随笔')">
+              <div class="my-menu">
+                🏖️ <span>随笔</span>
+              </div>
+            </li>
+
+            <!-- 旅拍 -->
+            <li @click="$router.push({path: '/travel'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('旅拍')">
+              <div class="my-menu">
+                📸 <span>旅拍</span>
+              </div>
+            </li>
 
             <!-- 百宝箱 -->
-            <li @click="$router.push({path: '/favorite'})">
+            <li @click="$router.push({path: '/favorite'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('百宝箱')">
               <div class="my-menu">
                 🧰 <span>百宝箱</span>
               </div>
             </li>
 
             <!-- 留言 -->
-            <li @click="$router.push({path: '/message'})">
+            <li @click="$router.push({path: '/message'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('留言')">
               <div class="my-menu">
                 📪 <span>留言</span>
               </div>
             </li>
 
             <!-- 聊天室 -->
-            <li @click="goIm()">
+            <li @click="goIm()" v-if="$store.state.sysConfig['bar.menu.show'].includes('联系我')">
               <div class="my-menu">
                 💬 <span>联系我</span>
               </div>
             </li>
 
             <!-- 后台 -->
-            <li @click="goAdmin()">
+            <li @click="goAdmin()" v-if="$store.state.sysConfig['bar.menu.show'].includes('后台')">
               <div class="my-menu">
                 💻️ <span>后台</span>
               </div>
@@ -123,6 +130,10 @@
 <!--    <div href="#" class="cd-top" v-if="!$common.mobile()" @click="toTop()"></div>-->
 
     <div class="toolButton">
+      <div id="toc-button" @click="clickTocButton()" v-if="hasToc">
+        <i class="fa fa-align-justify" aria-hidden="true"></i>
+      </div>
+
       <div class="backTop" v-if="toolButton" @click="toTop()">
         <!-- 回到顶部按钮 -->
         <svg viewBox="0 0 1024 1024" width="50" height="50">
@@ -175,13 +186,13 @@
                direction="ltr">
       <div>
         <ul class="small-menu">
-          <li @click="smallMenu({path: '/'})">
+          <li @click="smallMenu({path: '/'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('首页')">
             <div>
               🏡 <span>首页</span>
             </div>
           </li>
 
-          <li>
+          <li v-if="$store.state.sysConfig['bar.menu.show'].includes('记录')">
             <div>
               📒 <span>记录</span>
             </div>
@@ -196,42 +207,49 @@
           </li>
 
           <!-- 家 -->
-          <li @click="smallMenu({path: '/love'})">
+          <li @click="smallMenu({path: '/love'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('家')">
             <div>
               ❤️‍🔥 <span>家</span>
             </div>
           </li>
 
-<!--          &lt;!&ndash; 旅拍 &ndash;&gt;-->
-<!--          <li @click="smallMenu({path: '/travel'})">-->
-<!--            <div>-->
-<!--              🌏 <span>旅拍</span>-->
-<!--            </div>-->
-<!--          </li>-->
+          <!-- 随笔 -->
+          <li @click="smallMenu({path: '/jotting'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('随笔')">
+            <div>
+              🏖️ <span>随笔</span>
+            </div>
+          </li>
+
+          <!-- 旅拍 -->
+          <li @click="smallMenu({path: '/travel'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('旅拍')">
+            <div>
+              📸 <span>旅拍</span>
+            </div>
+          </li>
 
           <!-- 百宝箱 -->
-          <li @click="smallMenu({path: '/favorite'})">
+          <li @click="smallMenu({path: '/favorite'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('百宝箱')">
             <div>
               🧰 <span>百宝箱</span>
             </div>
           </li>
 
           <!-- 留言 -->
-          <li @click="smallMenu({path: '/message'})">
+          <li @click="smallMenu({path: '/message'})" v-if="$store.state.sysConfig['bar.menu.show'].includes('留言')">
             <div>
               📪 <span>留言</span>
             </div>
           </li>
 
           <!-- 聊天室 -->
-          <li @click="goIm()">
+          <li @click="goIm()" v-if="$store.state.sysConfig['bar.menu.show'].includes('联系我')">
             <div>
               💬 <span>联系我</span>
             </div>
           </li>
 
           <!-- 后台 -->
-          <li @click="goAdmin()">
+          <li @click="goAdmin()" v-if="$store.state.sysConfig['bar.menu.show'].includes('后台')">
             <div>
               💻️ <span>后台</span>
             </div>
@@ -340,7 +358,7 @@
 
       window.addEventListener('resize', () => {
         let docWidth = document.body.clientWidth;
-        if (docWidth < 810) {
+        if (docWidth < 920) {
           this.mobile = true;
         } else {
           this.mobile = false;
@@ -353,6 +371,9 @@
       },
       sortInfo() {
         return this.$store.state.sortInfo;
+      },
+      hasToc() {
+        return this.$route.name === 'article';
       }
     },
     methods: {
@@ -497,6 +518,14 @@
           return false;
         }
       },
+      clickTocButton() {
+        let display = $(".toc");
+        if ("none" === display.css("display")) {
+          display.css("display", "unset");
+        } else {
+          display.css("display", "none");
+        }
+      },
       changeMouseAnimation() {
         this.mouseAnimation = !this.mouseAnimation;
         if (this.mouseAnimation) {
@@ -554,7 +583,7 @@
 
   .scroll-menu li {
     list-style: none;
-    margin: 0 12px;
+    margin: 0 8px;
     font-size: 17px;
     height: 60px;
     line-height: 60px;
@@ -637,6 +666,18 @@
     width: 30px;
   }
 
+  #toc-button {
+    animation: slide-bottom 0.5s ease-in-out both;
+    cursor: pointer;
+    font-size: 23px;
+    width: 30px;
+    margin-bottom: 4px;
+  }
+
+  #toc-button:hover {
+    color: var(--themeBackground);
+  }
+
   .my-setting {
     display: flex;
     flex-wrap: wrap;
@@ -671,6 +712,7 @@
     position: relative;
     top: 0;
     left: -13px;
+    margin-bottom: 2px;
   }
 
   .backTop:hover {

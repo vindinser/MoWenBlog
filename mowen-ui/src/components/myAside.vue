@@ -3,7 +3,7 @@
     <div class="myAside-container">
       <!-- 网站信息 -->
       <div v-if="!$common.mobile()" class="card-content1 shadow-box background-opacity">
-        <el-avatar style="margin-top: 20px" fit="fill" class="user-avatar" :size="120" :src="webInfo.avatar"></el-avatar>
+        <el-avatar style="margin-top: 20px" class="user-avatar" :size="120" :src="webInfo.avatar"></el-avatar>
         <div class="web-name">{{webInfo.webName}}</div>
         <div class="web-info">
           <div class="blog-info-box">
@@ -195,7 +195,6 @@
     },
     created() {
       this.getRecommendArticles();
-      this.getAdmire();
     },
     methods: {
       selectSort(sort) {

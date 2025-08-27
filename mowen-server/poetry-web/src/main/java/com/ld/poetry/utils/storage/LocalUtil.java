@@ -43,13 +43,13 @@ public class LocalUtil implements StoreService {
             if (file.exists() && file.isFile()) {
                 if (file.delete()) {
                     log.info("文件删除成功：" + filePath);
-                    resourceService.lambdaUpdate().eq(Resource::getPath, filePath).remove();
                 } else {
                     log.error("文件删除失败：" + filePath);
                 }
             } else {
                 log.error("文件不存在或者不是一个文件：" + filePath);
             }
+            resourceService.lambdaUpdate().eq(Resource::getPath, filePath).remove();
         }
     }
 

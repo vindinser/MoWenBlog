@@ -17,59 +17,61 @@
       <div>
         <div class="history-title">总览</div>
         <div>
-          <div style="width: 400px;margin: 0 auto;display: flex;justify-content: center">
-            <div class="history-name" style="line-height: 35px">总访问量（每个IP每天记一次）:</div>
+          <div style="margin: 0 auto;display: flex;justify-content: center">
+            <div class="history-name" style="line-height: 35px">总访问量:</div>
             <div style="color:var(--maxLightRed);font-weight: bold;font-size: 30px;line-height: 35px">
               {{historyInfo.ip_history_count}}
             </div>
           </div>
-          <div class="history-info" style="width: 640px">
-            <div style="margin-right: 40px">
-              <div class="history-name">省份访问TOP10</div>
+          <div class="myCenter">
+            <div class="history-info">
               <div>
-                <el-table :data="historyInfo.ip_history_province">
-                  <el-table-column
-                    type="index"
-                    align="center"
-                    width="60">
-                  </el-table-column>
-                  <el-table-column
-                    prop="province"
-                    align="center"
-                    label="省份"
-                    width="140">
-                  </el-table-column>
-                  <el-table-column
-                    prop="num"
-                    align="center"
-                    label="数量"
-                    width="100">
-                  </el-table-column>
-                </el-table>
+                <div class="history-name" style="margin-top: 15px">省份访问TOP10</div>
+                <div>
+                  <el-table :data="historyInfo.ip_history_province">
+                    <el-table-column
+                      type="index"
+                      align="center"
+                      width="60">
+                    </el-table-column>
+                    <el-table-column
+                      prop="province"
+                      align="center"
+                      label="省份"
+                      width="140">
+                    </el-table-column>
+                    <el-table-column
+                      prop="num"
+                      align="center"
+                      label="数量"
+                      width="100">
+                    </el-table-column>
+                  </el-table>
+                </div>
               </div>
-            </div>
-            <div>
-              <div class="history-name">IP访问TOP10</div>
               <div>
-                <el-table :data="historyInfo.ip_history_ip">
-                  <el-table-column
-                    type="index"
-                    align="center"
-                    width="60">
-                  </el-table-column>
-                  <el-table-column
-                    prop="ip"
-                    align="center"
-                    label="IP"
-                    width="140">
-                  </el-table-column>
-                  <el-table-column
-                    prop="num"
-                    align="center"
-                    label="数量"
-                    width="100">
-                  </el-table-column>
-                </el-table>
+                <div class="history-name" style="margin-top: 15px">IP访问TOP10</div>
+                <div>
+                  <el-table :data="historyInfo.ip_history_ip">
+                    <el-table-column
+                      type="index"
+                      align="center"
+                      width="60">
+                    </el-table-column>
+                    <el-table-column
+                      prop="ip"
+                      align="center"
+                      label="IP"
+                      width="140">
+                    </el-table-column>
+                    <el-table-column
+                      prop="num"
+                      align="center"
+                      label="数量"
+                      width="100">
+                    </el-table-column>
+                  </el-table>
+                </div>
               </div>
             </div>
           </div>
@@ -79,59 +81,61 @@
       <!-- 今日访问 -->
       <div>
         <div class="history-title">今日访问</div>
-        <div>
-          <div style="width: 250px;margin: 0 auto;display: flex;justify-content: center">
-            <div class="history-name" style="line-height: 35px">今日访问量：</div>
-            <div style="color:var(--maxLightRed);font-weight: bold;font-size: 30px;line-height: 35px">
-              {{historyInfo.ip_count_today}}
-            </div>
-          </div>
-          <div class="history-info" style="width: 640px">
-            <div style="margin-right: 40px">
-              <div class="history-name">今日访问省份统计</div>
-              <div>
-                <el-table :data="historyInfo.province_today">
-                  <el-table-column
-                    type="index"
-                    align="center"
-                    width="60">
-                  </el-table-column>
-                  <el-table-column
-                    prop="province"
-                    align="center"
-                    label="省份"
-                    width="140">
-                  </el-table-column>
-                  <el-table-column
-                    prop="num"
-                    align="center"
-                    label="数量"
-                    width="100">
-                  </el-table-column>
-                </el-table>
+        <div class="myCenter">
+          <div>
+            <div style="margin: 0 auto;display: flex;justify-content: center">
+              <div class="history-name" style="line-height: 35px">今日访问量：</div>
+              <div style="color:var(--maxLightRed);font-weight: bold;font-size: 30px;line-height: 35px">
+                {{historyInfo.ip_count_today}}
               </div>
             </div>
-            <div>
-              <div class="history-name">今日访问用户</div>
-              <div class="history-avatar">
-                <el-table :data="historyInfo.username_today">
-                  <el-table-column
-                    align="center"
-                    label="头像"
-                    width="100">
-                    <template slot-scope="scope">
-                      <el-avatar class="user-avatar" :size="30"
-                                 :src="scope.row.avatar">
-                      </el-avatar>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="username"
-                    align="center"
-                    label="用户"
-                    width="200">
-                  </el-table-column>
-                </el-table>
+            <div class="history-info">
+              <div>
+                <div class="history-name" style="margin-top: 15px">今日访问省份统计</div>
+                <div>
+                  <el-table :data="historyInfo.province_today">
+                    <el-table-column
+                      type="index"
+                      align="center"
+                      width="60">
+                    </el-table-column>
+                    <el-table-column
+                      prop="province"
+                      align="center"
+                      label="省份"
+                      width="140">
+                    </el-table-column>
+                    <el-table-column
+                      prop="num"
+                      align="center"
+                      label="数量"
+                      width="100">
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </div>
+              <div>
+                <div class="history-name" style="margin-top: 15px">今日访问用户</div>
+                <div class="history-avatar">
+                  <el-table :data="historyInfo.username_today">
+                    <el-table-column
+                      align="center"
+                      label="头像"
+                      width="100">
+                      <template slot-scope="scope">
+                        <el-avatar class="user-avatar" :size="30"
+                                   :src="scope.row.avatar">
+                        </el-avatar>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="username"
+                      align="center"
+                      label="用户"
+                      width="200">
+                    </el-table-column>
+                  </el-table>
+                </div>
               </div>
             </div>
           </div>
@@ -142,34 +146,36 @@
       <div>
         <div class="history-title">昨日访问</div>
         <div>
-          <div style="width: 250px;margin: 0 auto;display: flex;justify-content: center">
+          <div style="margin: 0 auto;display: flex;justify-content: center">
             <div class="history-name" style="line-height: 35px">昨日访问量：</div>
             <div style="color:var(--maxLightRed);font-weight: bold;font-size: 30px;line-height: 35px">
               {{historyInfo.ip_count_yest}}
             </div>
           </div>
-          <div class="history-info" style="width: 300px">
-            <div>
-              <div class="history-name">昨日访问用户</div>
-              <div class="history-avatar">
-                <el-table :data="historyInfo.username_yest">
-                  <el-table-column
-                    align="center"
-                    label="头像"
-                    width="100">
-                    <template slot-scope="scope">
-                      <el-avatar class="user-avatar" :size="30"
-                                 :src="scope.row.avatar">
-                      </el-avatar>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="username"
-                    align="center"
-                    label="用户"
-                    width="200">
-                  </el-table-column>
-                </el-table>
+          <div class="myCenter">
+            <div class="history-info">
+              <div>
+                <div class="history-name">昨日访问用户</div>
+                <div class="history-avatar">
+                  <el-table :data="historyInfo.username_yest">
+                    <el-table-column
+                      align="center"
+                      label="头像"
+                      width="100">
+                      <template slot-scope="scope">
+                        <el-avatar class="user-avatar" :size="30"
+                                   :src="scope.row.avatar">
+                        </el-avatar>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="username"
+                      align="center"
+                      label="用户"
+                      width="200">
+                    </el-table-column>
+                  </el-table>
+                </div>
               </div>
             </div>
           </div>
@@ -231,19 +237,15 @@
     color: var(--black);
   }
 
-  .el-tag {
-    margin: 10px;
-  }
-
   .history-title {
     margin: 15px auto 15px;
-    width: 120px;
     text-align: center;
     padding: 10px 20px;
     background: var(--lightGreen);
     color: var(--white);
     font-weight: bold;
     border-radius: 5px;
+    width: 150px;
   }
 
   .history-name {
@@ -256,7 +258,7 @@
   .history-info {
     display: flex;
     text-align: center;
-    margin: 20px auto 0;
+    margin: 0 auto;
   }
 
   .history-info >>> .el-table .cell {
@@ -269,6 +271,12 @@
 
   .history-info >>> .el-table::before {
     height: unset;
+  }
+
+  @media screen and (max-width: 800px) {
+    .history-info {
+      display: unset;
+    }
   }
 
 </style>

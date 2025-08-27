@@ -175,10 +175,6 @@
       </div>
     </div>
 
-    <div id="toc-button" @click="clickTocButton()">
-      <i class="fa fa-align-justify" aria-hidden="true"></i>
-    </div>
-
     <el-dialog title="版权声明"
                :visible.sync="copyrightDialogVisible"
                width="80%"
@@ -283,6 +279,7 @@
   const proButton = () => import( "./common/proButton");
   const videoPlayer = () => import( "./common/videoPlayer");
   import MarkdownIt from 'markdown-it';
+  import DOMPurify from 'dompurify';
 
   export default {
     components: {
@@ -332,24 +329,8 @@
       window.removeEventListener("scroll", this.onScrollPage);
     },
     watch: {
-      scrollTop(scrollTop, oldScrollTop) {
-        let isShow = scrollTop - window.innerHeight > 30;
-        if (isShow) {
-          $("#toc-button").css("bottom", "14.1vh");
-        } else {
-          $("#toc-button").css("bottom", "8vh");
-        }
-      },
     },
     methods: {
-      clickTocButton() {
-        let display = $(".toc");
-        if ("none" === display.css("display")) {
-          display.css("display", "unset");
-        } else {
-          display.css("display", "none");
-        }
-      },
       subscribeLabel() {
         if (this.$common.isEmpty(this.$store.state.currentUser)) {
           this.$message({
@@ -513,13 +494,21 @@
         headings.attr('id', (i, id) => id || 'toc-' + i);
       },
       getArticle(password) {
-        this.$http.get(this.$constant.baseURL + "/article/getArticleById", {id: this.id, password: password})
+        this.$http.get(this.$constant.baseURL + "/article/getArticleById", {id: this.id, viewValue: password})
           .then((res) => {
             if (!this.$common.isEmpty(res.data)) {
               this.article = res.data;
               this.getNews();
-              const md = new MarkdownIt({breaks: true}).use(require('markdown-it-multimd-table'));
-              this.articleContentHtml = md.render(this.article.articleContent);
+              const md = new MarkdownIt({
+                html: true,
+                breaks: true
+              }).use(require('markdown-it-multimd-table'));
+              // 使用markdown-it渲染
+              const renderedHtml = md.render(this.article.articleContent);
+              
+              // 使用DOMPurify净化HTML，防止XSS攻击
+              this.articleContentHtml = DOMPurify.sanitize(renderedHtml);
+              
               this.$nextTick(() => {
                 this.$common.imgShow(".entry-content img");
                 this.highlight();
@@ -548,13 +537,9 @@
               this.tips = error.message.substr(4);
               this.showPasswordDialog = true;
             } else {
-              this.$message({
-                message: error.message,
-                type: "error",
-                customClass: "message-index"
+              this.$alert(error.message, '文章提示', {
+                confirmButtonText: '确定'
               });
-              this.tips = error.message;
-              this.showPasswordDialog = true;
             }
           });
       },
@@ -790,21 +775,6 @@
     line-height: 1.5;
   }
 
-  #toc-button {
-    position: fixed;
-    right: 3vh;
-    bottom: 8vh;
-    animation: slide-bottom 0.5s ease-in-out both;
-    z-index: 100;
-    cursor: pointer;
-    font-size: 23px;
-    width: 30px;
-  }
-
-  #toc-button:hover {
-    color: var(--themeBackground);
-  }
-
   .copyright-container {
     color: var(--black);
     line-height: 2.5;
@@ -820,12 +790,6 @@
 
     .article-info-news {
       right: 20px;
-    }
-  }
-
-  @media screen and (max-width: 400px) {
-    #toc-button {
-      right: 0.5vh;
     }
   }
 </style>

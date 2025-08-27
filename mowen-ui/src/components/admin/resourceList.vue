@@ -24,11 +24,13 @@
           <el-option key="17" label="Love.Man" value="love/manCover"></el-option>
           <el-option key="18" label="Love.Woman" value="love/womanCover"></el-option>
           <el-option key="19" label="收藏夹封面" value="favoritesCover"></el-option>
+          <el-option key="20" label="旅拍图片" value="lovePhotoCover"></el-option>
         </el-select>
         <el-button type="primary" icon="el-icon-search" @click="search()">搜索</el-button>
         <el-button type="primary" @click="addResources()">新增资源</el-button>
       </div>
       <el-table :data="resources" border class="table" header-cell-class-name="table-header">
+        <el-table-column type="index" width="50" />
         <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
         <el-table-column prop="originalName" label="名称" align="center"></el-table-column>
         <el-table-column prop="userId" label="用户ID" align="center"></el-table-column>
@@ -73,6 +75,7 @@
       </el-table>
       <div class="pagination">
         <el-pagination background layout="total, prev, pager, next"
+                       :pager-count="5"
                        :current-page="pagination.current"
                        :page-size="pagination.size"
                        :total="pagination.total"
@@ -93,7 +96,7 @@
           <div style="line-height: 40px">存储平台：</div>
           <el-select v-model="storeType" placeholder="存储平台" style="width: 120px">
             <el-option
-              v-for="(item, i) in storeTypes"
+              v-for="(item, i) in storeTypes.filter(s => s.isShow === 'true')"
               :key="i"
               :label="item.label"
               :value="item.value">
@@ -128,8 +131,8 @@
         resources: [],
         resourceDialog: false,
         storeTypes: [
-          {label: "服务器", value: "local"},
-          {label: "七牛云", value: "qiniu"}
+          {label: "服务器", value: "local", isShow: this.$store.state.sysConfig['local.enable']},
+          {label: "七牛云", value: "qiniu", isShow: this.$store.state.sysConfig['qiniu.enable']}
         ],
         storeType: localStorage.getItem("defaultStoreType")
       }

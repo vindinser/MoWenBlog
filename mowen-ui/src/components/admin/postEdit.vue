@@ -15,7 +15,7 @@
       </svg>
       文章信息
     </el-tag>
-    <el-form :model="article" :rules="rules" ref="ruleForm" label-width="150px"
+    <el-form :model="article" :rules="rules" ref="ruleForm" label-width="80px"
              class="demo-ruleForm">
       <el-form-item label="标题" prop="articleTitle">
         <el-input maxlength="30" v-model="article.articleTitle"></el-input>
@@ -25,11 +25,11 @@
         <el-input maxlength="1000" v-model="article.videoUrl"></el-input>
       </el-form-item>
 
-      <el-form-item label="内容" prop="articleContent">
+      <el-form-item label-width="auto" prop="articleContent">
         <mavon-editor ref="md" @imgAdd="imgAdd" v-model="article.articleContent"/>
       </el-form-item>
 
-      <el-form-item label="是否启用评论" prop="commentStatus">
+      <el-form-item label="启用评论" prop="commentStatus">
         <el-tag :type="article.commentStatus === false ? 'danger' : 'success'"
                 disable-transitions>
           {{article.commentStatus === false ? '否' : '是'}}
@@ -45,20 +45,33 @@
         <el-switch v-model="article.recommendStatus"></el-switch>
       </el-form-item>
 
-      <el-form-item label="是否可见" prop="viewStatus">
-        <el-tag :type="article.viewStatus === false ? 'danger' : 'success'"
-                disable-transitions>
-          {{article.viewStatus === false ? '否' : '是'}}
-        </el-tag>
-        <el-switch v-model="article.viewStatus"></el-switch>
+      <el-form-item label="访问类型" prop="viewType">
+        <el-select v-model="article.viewType" placeholder="访问类型" style="width: 120px">
+          <el-option key="1" label="公开" value="public"></el-option>
+          <el-option key="2" label="登录" value="login"></el-option>
+          <el-option key="3" label="用户等级" value="userLv"></el-option>
+          <el-option key="4" label="密码" value="password"></el-option>
+        </el-select>
       </el-form-item>
 
-      <el-form-item v-if="article.viewStatus === false" label="不可见时的访问密码" prop="password">
-        <el-input maxlength="30" v-model="article.password"></el-input>
+      <el-form-item v-if="!$common.isEmpty(article.viewType) && article.viewType !== 'public' && article.viewType !== 'login'" label="访问条件" prop="viewValue">
+        <template v-if="article.viewType === 'userLv'">
+          <el-select v-model="article.viewValue" placeholder="用户等级" style="width: 120px">
+            <el-option key="1" label="VIP1" value="1"></el-option>
+            <el-option key="2" label="VIP2" value="2"></el-option>
+            <el-option key="3" label="VIP3" value="3"></el-option>
+            <el-option key="4" label="VIP4" value="4"></el-option>
+            <el-option key="5" label="VIP5" value="5"></el-option>
+            <el-option key="6" label="VIP6" value="6"></el-option>
+          </el-select>
+        </template>
+        <template v-else-if="article.viewType === 'password'">
+          <el-input maxlength="30" v-model="article.viewValue"></el-input>
+        </template>
       </el-form-item>
 
-      <el-form-item v-if="article.viewStatus === false" label="密码提示" prop="tips">
-        <el-input maxlength="60" v-model="article.tips"></el-input>
+      <el-form-item v-if="!$common.isEmpty(article.viewType) && article.viewType !== 'public' && article.viewType !== 'login'" label="提示" prop="tips">
+        <el-input maxlength="100" v-model="article.tips"></el-input>
       </el-form-item>
 
       <el-form-item label="封面" prop="articleCover">
@@ -118,8 +131,8 @@
           articleContent: "",
           commentStatus: true,
           recommendStatus: false,
-          viewStatus: true,
-          password: "",
+          viewType: "",
+          viewValue: "",
           tips: "",
           articleCover: "",
           videoUrl: "",
@@ -142,8 +155,8 @@
           recommendStatus: [
             {required: true, message: '是否推荐', trigger: 'change'}
           ],
-          viewStatus: [
-            {required: true, message: '是否可见', trigger: 'change'}
+          viewType: [
+            {required: true, message: '访问类型', trigger: 'change'}
           ],
           articleCover: [
             {required: true, message: '封面', trigger: 'change'}
@@ -284,9 +297,10 @@
           });
       },
       submitForm(formName) {
-        if (this.article.viewStatus === false && this.$common.isEmpty(this.article.password)) {
+        if ((this.article.viewType === 'password' || this.article.viewType === 'userLv') &&
+          this.$common.isEmpty(this.article.viewValue)) {
           this.$message({
-            message: "文章不可见时必须输入密码！",
+            message: "请设置文章访问参数！",
             type: "error"
           });
           return;

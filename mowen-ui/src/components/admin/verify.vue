@@ -41,7 +41,12 @@
     },
     computed: {},
     created() {
-
+      let sysConfig = this.$store.state.sysConfig;
+      if (!this.$common.isEmpty(sysConfig) && !this.$common.isEmpty(sysConfig['webStaticResourcePrefix'])) {
+        let root = document.querySelector(":root");
+        let webStaticResourcePrefix = sysConfig['webStaticResourcePrefix'];
+        root.style.setProperty("--backgroundPicture", "url(" + webStaticResourcePrefix + "assets/backgroundPicture.jpg)");
+      }
     },
     methods: {
       login() {

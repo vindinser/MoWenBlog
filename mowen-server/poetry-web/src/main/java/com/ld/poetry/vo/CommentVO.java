@@ -51,4 +51,5 @@ public class CommentVO {
     private String parentUsername;
     private String username;
     private String avatar;
+    private String createTimeLv = "平民";
 }

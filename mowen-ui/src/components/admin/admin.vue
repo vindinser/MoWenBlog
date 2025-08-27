@@ -3,7 +3,7 @@
     <myHeader></myHeader>
     <sidebar></sidebar>
     <div class="content-box">
-      <div class="content">
+      <div class="admin-content">
         <router-view></router-view>
       </div>
     </div>
@@ -31,9 +31,7 @@
     created() {
       let sysConfig = this.$store.state.sysConfig;
       if (!this.$common.isEmpty(sysConfig) && !this.$common.isEmpty(sysConfig['webStaticResourcePrefix'])) {
-        let root = document.querySelector(":root");
         let webStaticResourcePrefix = sysConfig['webStaticResourcePrefix'];
-        root.style.setProperty("--backgroundPicture", "url(" + webStaticResourcePrefix + "assets/backgroundPicture.jpg)");
         const font = new FontFace("poetize-font", "url(" + webStaticResourcePrefix + "assets/font.woff2)");
         font.load();
         document.fonts.add(font);
@@ -59,11 +57,17 @@
     transition: left .3s ease-in-out;
   }
 
-  .content {
+  .admin-content {
     width: auto;
     height: 100%;
     padding: 30px;
     overflow-y: scroll;
+  }
+
+  @media screen and (max-width: 550px) {
+    .admin-content {
+      padding: 5px;
+    }
   }
 
 </style>

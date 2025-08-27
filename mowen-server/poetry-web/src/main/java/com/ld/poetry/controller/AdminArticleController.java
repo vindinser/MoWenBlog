@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWra
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ld.poetry.aop.LoginCheck;
 import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.constants.CommonConst;
 import com.ld.poetry.entity.*;
 import com.ld.poetry.service.ArticleService;
 import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.utils.cache.PoetryCache;
 import com.ld.poetry.vo.ArticleVO;
 import com.ld.poetry.vo.BaseRequestVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +53,11 @@ public class AdminArticleController {
     @GetMapping("/article/changeArticleStatus")
     @LoginCheck(1)
     public PoetryResult changeArticleStatus(@RequestParam("articleId") Integer articleId,
-                                            @RequestParam(value = "viewStatus", required = false) Boolean viewStatus,
                                             @RequestParam(value = "commentStatus", required = false) Boolean commentStatus,
                                             @RequestParam(value = "recommendStatus", required = false) Boolean recommendStatus) {
         LambdaUpdateChainWrapper<Article> updateChainWrapper = articleService.lambdaUpdate()
                 .eq(Article::getId, articleId)
                 .eq(Article::getUserId, PoetryUtil.getUserId());
-        if (viewStatus != null) {
-            updateChainWrapper.set(Article::getViewStatus, viewStatus);
-        }
         if (commentStatus != null) {
             updateChainWrapper.set(Article::getCommentStatus, commentStatus);
         }
@@ -67,6 +65,7 @@ public class AdminArticleController {
             updateChainWrapper.set(Article::getRecommendStatus, recommendStatus);
         }
         updateChainWrapper.update();
+        PoetryCache.remove(CommonConst.ARTICLE_INFO + articleId.toString());
         return PoetryResult.success();
     }
 

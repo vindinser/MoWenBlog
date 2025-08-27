@@ -7,9 +7,11 @@ import com.ld.poetry.config.PoetryResult;
 import com.ld.poetry.constants.CommonConst;
 import com.ld.poetry.dao.ArticleMapper;
 import com.ld.poetry.dao.CommentMapper;
+import com.ld.poetry.dao.WeiYanMapper;
 import com.ld.poetry.entity.Article;
 import com.ld.poetry.entity.Comment;
 import com.ld.poetry.entity.User;
+import com.ld.poetry.entity.WeiYan;
 import com.ld.poetry.enums.CodeMsg;
 import com.ld.poetry.enums.CommentTypeEnum;
 import com.ld.poetry.service.CommentService;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +43,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Autowired
     private ArticleMapper articleMapper;
+
+    @Autowired
+    private WeiYanMapper weiYanMapper;
 
     @Autowired
     private CommonQuery commonQuery;
@@ -66,6 +72,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             }
         }
 
+        WeiYan weiyan = null;
+        if (CommentTypeEnum.COMMENT_TYPE_JOTTING.getCode().equals(commentVO.getType())) {
+            LambdaQueryChainWrapper<WeiYan> weiYanWrapper = new LambdaQueryChainWrapper<>(weiYanMapper);
+            weiyan = weiYanWrapper.eq(WeiYan::getId, commentVO.getSource()).select(WeiYan::getUserId).one();
+
+            if (weiyan == null) {
+                return PoetryResult.fail("随笔不存在");
+            }
+        }
 
         Comment comment = new Comment();
         comment.setSource(commentVO.getSource());
@@ -81,7 +96,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         save(comment);
 
         try {
-            mailSendUtil.sendCommentMail(commentVO, one, this);
+            mailSendUtil.sendCommentMail(commentVO, one, weiyan, this);
         } catch (Exception e) {
             log.error("发送评论邮件失败：", e);
         }
@@ -181,19 +196,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if (user != null) {
             commentVO.setAvatar(user.getAvatar());
             commentVO.setUsername(user.getUsername());
-        }
-
-        if (!StringUtils.hasText(commentVO.getUsername())) {
-            commentVO.setUsername(PoetryUtil.getRandomName(commentVO.getUserId().toString()));
+            commentVO.setCreateTimeLv(LvUtil.getCreateTimeLv(user.getCreateTime(), LocalDateTime.now(), user.getId()));
         }
 
         if (commentVO.getParentUserId() != null) {
             User u = commonQuery.getUser(commentVO.getParentUserId());
             if (u != null) {
                 commentVO.setParentUsername(u.getUsername());
-            }
-            if (!StringUtils.hasText(commentVO.getParentUsername())) {
-                commentVO.setParentUsername(PoetryUtil.getRandomName(commentVO.getParentUserId().toString()));
             }
         }
         return commentVO;

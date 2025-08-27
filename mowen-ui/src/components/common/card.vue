@@ -2,7 +2,7 @@
   <div class="card-container" v-if="!$common.isEmpty(resourcePathList)">
     <div v-for="(resourcePath, index) in resourcePathList"
          :key="index"
-         class="card-item shadow-box wow"
+         class="card-item shadow-box-mini wow"
          @click="clickResourcePath(resourcePath)">
       <div class="card-image">
         <el-image class="my-el-image"
@@ -38,7 +38,7 @@
               d="M725.333333 312.888889H711.111111v28.444444c0 31.288889-25.6 56.888889-56.888889 56.888889s-56.888889-25.6-56.888889-56.888889v-28.444444h-170.666666v28.444444c0 31.288889-25.6 56.888889-56.888889 56.888889s-56.888889-25.6-56.888889-56.888889v-28.444444h-14.222222c-22.755556 0-42.666667 19.911111-42.666667 42.666667v341.333333c0 22.755556 19.911111 42.666667 42.666667 42.666667h426.666666c22.755556 0 42.666667-19.911111 42.666667-42.666667v-341.333333c0-22.755556-19.911111-42.666667-42.666667-42.666667zM426.666667 654.222222h-56.888889c-17.066667 0-28.444444-11.377778-28.444445-28.444444s11.377778-28.444444 28.444445-28.444445h56.888889c17.066667 0 28.444444 11.377778 28.444444 28.444445s-11.377778 28.444444-28.444444 28.444444z m227.555555 0h-56.888889c-17.066667 0-28.444444-11.377778-28.444444-28.444444s11.377778-28.444444 28.444444-28.444445h56.888889c17.066667 0 28.444444 11.377778 28.444445 28.444445s-11.377778 28.444444-28.444445 28.444444z m0-113.777778h-56.888889c-17.066667 0-28.444444-11.377778-28.444444-28.444444s11.377778-28.444444 28.444444-28.444444h56.888889c17.066667 0 28.444444 11.377778 28.444445 28.444444s-11.377778 28.444444-28.444445 28.444444z"
               fill="#FFFFFF"></path>
           </svg>
-          发布于 {{ $common.getDateDiff(resourcePath.createTime) }}
+          {{ $common.getDateDiff(resourcePath.createTime) }}
         </div>
       </div>
     </div>
@@ -90,16 +90,16 @@
     background: rgba(255, 255, 255, .88);
     overflow: hidden;
     margin: 10px;
-    height: 300px;
+    height: 220px;
     flex-shrink: 0;
-    width: calc(100% / 3 - 20px);
+    width: calc(100% / 4 - 20px);
     cursor: pointer;
     animation: zoomIn 0.8s ease-in-out;
   }
 
   .card-image {
     width: 100%;
-    height: 180px;
+    height: 120px;
   }
 
   .card-image >>> .el-image__inner {
@@ -111,13 +111,13 @@
   }
 
   .card-body {
-    padding: 10px 20px;
+    padding: 8px 16px;
   }
 
   .card-title {
     font-size: 18px;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -130,7 +130,7 @@
 
   .card-desc {
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -146,15 +146,34 @@
     color: var(--greyFont);
   }
 
-  @media screen and (max-width: 700px) {
+  @media screen and (max-width: 960px) {
     .card-item {
-      width: calc(100% / 2 - 20px);
+      width: calc(100% / 3 - 20px);
     }
   }
 
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 760px) {
     .card-item {
-      width: calc(100% - 20px);
+      width: calc(100% / 2 - 10px);
+      margin: 5px;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .card-item {
+      height: 180px;
+    }
+
+    .card-image {
+      height: 100px;
+    }
+
+    .card-desc {
+      -webkit-line-clamp: 1;
+    }
+
+    .card-body {
+      padding: 4px 8px;
     }
   }
 

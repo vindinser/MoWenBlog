@@ -29,6 +29,7 @@
     </el-table>
     <div class="pagination">
       <el-pagination background layout="total, prev, pager, next"
+                     :pager-count="5"
                      :current-page="pagination.current"
                      :page-size="pagination.size"
                      :total="pagination.total"

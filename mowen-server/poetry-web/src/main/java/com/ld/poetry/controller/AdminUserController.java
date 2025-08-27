@@ -8,6 +8,7 @@ import com.ld.poetry.constants.CommonConst;
 import com.ld.poetry.entity.*;
 import com.ld.poetry.enums.CodeMsg;
 import com.ld.poetry.enums.PoetryEnum;
+import com.ld.poetry.enums.UserLvEnum;
 import com.ld.poetry.im.websocket.TioUtil;
 import com.ld.poetry.im.websocket.TioWebsocketStarter;
 import com.ld.poetry.service.UserService;
@@ -15,6 +16,7 @@ import com.ld.poetry.utils.PoetryUtil;
 import com.ld.poetry.utils.cache.PoetryCache;
 import com.ld.poetry.vo.BaseRequestVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.tio.core.Tio;
 
@@ -62,6 +64,7 @@ public class AdminUserController {
             updateChainWrapper.eq(User::getUserStatus, PoetryEnum.STATUS_ENABLE.getCode()).set(User::getUserStatus, PoetryEnum.STATUS_DISABLE.getCode()).update();
         }
         logout(userId);
+        PoetryCache.remove(CommonConst.USER_CACHE + userId.toString());
         return PoetryResult.success();
     }
 
@@ -71,11 +74,10 @@ public class AdminUserController {
     @GetMapping("/user/changeUserAdmire")
     @LoginCheck(0)
     public PoetryResult changeUserAdmire(@RequestParam("userId") Integer userId, @RequestParam("admire") String admire) {
-        userService.lambdaUpdate()
-                .eq(User::getId, userId)
-                .set(User::getAdmire, admire)
-                .update();
+        userService.lambdaUpdate().eq(User::getId, userId).set(User::getAdmire, StringUtils.hasText(admire) ? admire : null).update();
+        logout(userId);
         PoetryCache.remove(CommonConst.ADMIRE);
+        PoetryCache.remove(CommonConst.USER_CACHE + userId.toString());
         return PoetryResult.success();
     }
 
@@ -95,6 +97,27 @@ public class AdminUserController {
         userService.lambdaUpdate().eq(User::getId, userId).set(User::getUserType, userType).update();
 
         logout(userId);
+        PoetryCache.remove(CommonConst.USER_CACHE + userId.toString());
+        return PoetryResult.success();
+    }
+
+    /**
+     * 修改用户等级
+     */
+    @GetMapping("/user/changeUserLv")
+    @LoginCheck(0)
+    public PoetryResult changeUserLv(@RequestParam("userId") Integer userId, @RequestParam("userLv") Integer userLv) {
+        if (userId.intValue() == PoetryUtil.getAdminUser().getId().intValue()) {
+            return PoetryResult.fail("站长等级不能修改！");
+        }
+
+        if (UserLvEnum.getEnumByCode(userLv) == null) {
+            return PoetryResult.fail(CodeMsg.PARAMETER_ERROR);
+        }
+        userService.lambdaUpdate().eq(User::getId, userId).set(User::getUserLv, userLv).update();
+
+        logout(userId);
+        PoetryCache.remove(CommonConst.USER_CACHE + userId.toString());
         return PoetryResult.success();
     }
 

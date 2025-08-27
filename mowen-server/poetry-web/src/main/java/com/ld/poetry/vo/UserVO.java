@@ -26,6 +26,8 @@ public class UserVO {
 
     private String avatar;
 
+    private Integer userLv;
+
     private String introduction;
 
     private String subscribe;

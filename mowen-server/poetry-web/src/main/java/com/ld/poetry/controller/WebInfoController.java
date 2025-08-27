@@ -154,6 +154,7 @@ public class WebInfoController {
      * 获取赞赏
      */
     @GetMapping("/getAdmire")
+    @LoginCheck(0)
     public PoetryResult<List<User>> getAdmire() {
         return PoetryResult.success(commonQuery.getAdmire());
     }

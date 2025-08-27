@@ -95,7 +95,7 @@ public class CommonQuery {
             return user;
         }
         User u = userService.getById(userId);
-        if (u != null) {
+        if (u != null && u.getUserStatus()) {
             PoetryCache.put(CommonConst.USER_CACHE + userId.toString(), u, CommonConst.EXPIRE);
             return u;
         }
@@ -122,6 +122,30 @@ public class CommonQuery {
         }
     }
 
+    public Article getArticleInfo(Integer id) {
+        Article article = (Article) PoetryCache.get(CommonConst.ARTICLE_INFO + id.toString());
+        if (article != null) {
+            return article;
+        }
+        synchronized ((CommonConst.ARTICLE_INFO + id.toString()).intern()) {
+            article = (Article) PoetryCache.get(CommonConst.ARTICLE_INFO + id.toString());
+            if (article != null) {
+                return article;
+            } else {
+                LambdaQueryChainWrapper<Article> wrapper = new LambdaQueryChainWrapper<>(articleMapper);
+                Article c = wrapper.select(Article::getId, Article::getArticleTitle, Article::getArticleCover,
+                                Article::getViewType, Article::getViewValue, Article::getTips)
+                        .eq(Article::getId, id).one();
+                if (c != null) {
+                    PoetryCache.put(CommonConst.ARTICLE_INFO + id.toString(), c, CommonConst.EXPIRE);
+                    return c;
+                } else {
+                    return null;
+                }
+            }
+        }
+    }
+
     public List<FamilyVO> getFamilyList() {
         List<FamilyVO> familyVOList = (List<FamilyVO>) PoetryCache.get(CommonConst.FAMILY_LIST);
         if (familyVOList != null) {
@@ -130,9 +154,7 @@ public class CommonQuery {
 
         synchronized (CommonConst.FAMILY_LIST.intern()) {
             familyVOList = (List<FamilyVO>) PoetryCache.get(CommonConst.FAMILY_LIST);
-            if (familyVOList != null) {
-                return familyVOList;
-            } else {
+            if (familyVOList == null) {
                 LambdaQueryChainWrapper<Family> queryChainWrapper = new LambdaQueryChainWrapper<>(familyMapper);
                 List<Family> familyList = queryChainWrapper.eq(Family::getStatus, Boolean.TRUE).list();
                 if (!CollectionUtils.isEmpty(familyList)) {
@@ -146,8 +168,8 @@ public class CommonQuery {
                 }
 
                 PoetryCache.put(CommonConst.FAMILY_LIST, familyVOList);
-                return familyVOList;
             }
+            return familyVOList;
         }
     }
 
@@ -156,10 +178,17 @@ public class CommonQuery {
         if (count != null) {
             return count;
         }
-        LambdaQueryChainWrapper<Comment> wrapper = new LambdaQueryChainWrapper<>(commentMapper);
-        Integer c = wrapper.eq(Comment::getSource, source).eq(Comment::getType, type).count();
-        PoetryCache.put(CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type, c, CommonConst.EXPIRE);
-        return c;
+        synchronized ((CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type).intern()) {
+            count = (Integer) PoetryCache.get(CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type);
+            if (count != null) {
+                return count;
+            } else {
+                LambdaQueryChainWrapper<Comment> wrapper = new LambdaQueryChainWrapper<>(commentMapper);
+                Integer c = wrapper.eq(Comment::getSource, source).eq(Comment::getType, type).count();
+                PoetryCache.put(CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type, c, CommonConst.EXPIRE);
+                return c;
+            }
+        }
     }
 
     public List<Integer> getUserArticleIds(Integer userId) {
@@ -222,7 +251,9 @@ public class CommonQuery {
 
         synchronized (CommonConst.SORT_INFO.intern()) {
             sortInfo = (List<Sort>) PoetryCache.get(CommonConst.SORT_INFO);
-            if (sortInfo == null) {
+            if (sortInfo != null) {
+                return sortInfo;
+            } else {
                 List<Sort> sorts = new LambdaQueryChainWrapper<>(sortMapper).list();
                 if (!CollectionUtils.isEmpty(sorts)) {
                     sorts.forEach(sort -> {
@@ -244,8 +275,6 @@ public class CommonQuery {
                 }
                 PoetryCache.put(CommonConst.SORT_INFO, sorts);
                 return sorts;
-            } else {
-                return sortInfo;
             }
         }
     }

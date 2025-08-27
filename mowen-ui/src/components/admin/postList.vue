@@ -5,6 +5,12 @@
         <el-option key="1" label="是" :value="true"></el-option>
         <el-option key="2" label="否" :value="false"></el-option>
       </el-select>
+      <el-select v-model="pagination.viewType" placeholder="访问类型" style="width: 120px" class="mrb10">
+        <el-option key="1" label="公开" value="public"></el-option>
+        <el-option key="2" label="登录" value="login"></el-option>
+        <el-option key="3" label="用户等级" value="userLv"></el-option>
+        <el-option key="4" label="密码" value="password"></el-option>
+      </el-select>
       <el-select style="width: 140px" class="mrb10" v-model="pagination.sortId" placeholder="请选择分类">
         <el-option
           v-for="item in sorts"
@@ -34,13 +40,28 @@
       <el-table-column prop="label.labelName" label="标签" align="center"></el-table-column>
       <el-table-column prop="viewCount" label="浏览量" align="center"></el-table-column>
       <el-table-column prop="likeCount" label="点赞数" align="center"></el-table-column>
-      <el-table-column label="是否可见" align="center">
+      <el-table-column label="访问类型" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.viewStatus === false ? 'danger' : 'success'"
+          <el-tag type="success"
+                  v-if="scope.row.viewType === 'public'"
                   disable-transitions>
-            {{scope.row.viewStatus === false ? '不可见' : '可见'}}
+            公开
           </el-tag>
-          <el-switch @click.native="changeStatus(scope.row, 1)" v-model="scope.row.viewStatus"></el-switch>
+          <el-tag type="success"
+                  v-else-if="scope.row.viewType === 'login'"
+                  disable-transitions>
+            登录
+          </el-tag>
+          <el-tag type="success"
+                  v-else-if="scope.row.viewType === 'userLv'"
+                  disable-transitions>
+            用户等级
+          </el-tag>
+          <el-tag type="success"
+                  v-else
+                  disable-transitions>
+            密码
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="封面" align="center">
@@ -80,6 +101,7 @@
     </el-table>
     <div class="pagination">
       <el-pagination background layout="total, prev, pager, next"
+                     :pager-count="5"
                      :current-page="pagination.current"
                      :page-size="pagination.size"
                      :total="pagination.total"
@@ -101,6 +123,7 @@
           total: 0,
           searchKey: "",
           recommendStatus: null,
+          viewType: null,
           sortId: null,
           labelId: null
         },
@@ -190,12 +213,7 @@
       },
       changeStatus(article, flag) {
         let param;
-        if (flag === 1) {
-          param = {
-            articleId: article.id,
-            viewStatus: article.viewStatus
-          }
-        } else if (flag === 2) {
+        if (flag === 2) {
           param = {
             articleId: article.id,
             commentStatus: article.commentStatus

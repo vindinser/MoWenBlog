@@ -5,7 +5,7 @@
       ref="upload"
       multiple
       drag
-      :action="$store.state.sysConfig.qiniuUrl"
+      :action="''"
       :on-change="handleChange"
       :before-upload="beforeUpload"
       :on-success="handleSuccess"
@@ -138,6 +138,7 @@
                 token: res.data,
                 key: key
               };
+              options.action = this.$store.state.sysConfig.qiniuUrl;
               return upload(options);
             } else if (res !== null && res.hasOwnProperty("code") && res.code !== 200) {
               return Promise.reject(res.message);
