@@ -1,24 +1,28 @@
 <template>
-  <div>
+  <div v-if="!$common.isEmpty($store.state.sysConfig)">
     <!-- el过渡动画 -->
     <transition name="el-fade-in-linear">
       <!-- 导航栏 -->
-      <div v-show="toolbar.visible || ($common.mobile() || mobile)"
-           @mouseenter="hoverEnter = true"
-           @mouseleave="hoverEnter = false"
-           :class="[{ enter: toolbar.enter }, { hoverEnter: (hoverEnter || this.$route.path === '/favorite' || this.$route.path === '/travel') && !toolbar.enter }]"
-           class="toolbar-content myBetween">
+      <div
+        v-show="toolbar.visible || ($common.mobile() || mobile)"
+        @mouseenter="hoverEnter = true"
+        @mouseleave="hoverEnter = false"
+        :class="[{ enter: toolbar.enter }, { hoverEnter: (hoverEnter || this.$route.path === '/favorite' || this.$route.path === '/travel') && !toolbar.enter }]"
+        class="toolbar-content myBetween"
+      >
         <!-- 网站名称 -->
         <div class="toolbar-title">
           <h2 @click="$router.push({path: '/'})">{{$store.state.webInfo.webName}}</h2>
         </div>
 
         <!-- 手机导航按钮 -->
-        <div v-if="$common.mobile() || mobile"
-             class="toolbar-mobile-menu"
-             @click="toolbarDrawer = !toolbarDrawer"
-             :class="{ enter: toolbar.enter }">
-          <i class="el-icon-s-operation"></i>
+        <div
+          v-if="$common.mobile() || mobile"
+          class="toolbar-mobile-menu"
+          @click="toolbarDrawer = !toolbarDrawer"
+          :class="{ enter: toolbar.enter }"
+        >
+          <i class="el-icon-s-operation" />
         </div>
 
         <!-- 导航列表 -->
@@ -299,6 +303,14 @@
       }
     },
     mounted() {
+      const friendUrl = this.$store.state.sysConfig['friendUrl'];
+      this.$notify({
+        title: 'MOWEN',
+        type: 'success',
+        dangerouslyUseHTMLString: true,
+        message: `<div><a style="text-decoration: underline;color: #ff416c" href="${ friendUrl }">MOWEN - 玄牝之门，是谓天地根。</a></div>`
+      });
+
       if (this.mouseAnimation) {
         mousedown();
       }

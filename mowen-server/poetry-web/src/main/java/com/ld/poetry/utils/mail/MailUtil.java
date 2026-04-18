@@ -90,7 +90,7 @@ public class MailUtil {
                 "            </div>\n" +
                 "            %s\n" +
                 "            <a style=\"width: 150px;height: 38px;background: #ef859d38;border-radius: 32px;display: flex;align-items: center;justify-content: center;text-decoration: none;margin: 40px auto 0\"\n" +
-                "               href=\"http://blog.zsawxotot.site\" target=\"_blank\">\n" +
+                "               href=\"http://blog.zsawxotof.site\" target=\"_blank\">\n" +
                 "                <span style=\"color: #DB214B\">以墨为媒，自此问始。</span>\n" +
                 "            </a>\n" +
                 "        </div>\n" +

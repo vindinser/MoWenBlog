@@ -11,7 +11,8 @@ export default {
 
   host: location.hostname + (location.port ? ':' + location.port : ''),
 
-  live2d_path: "https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/",
+  // live2d_path: "https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/",
+  live2d_path: "/libs/",
   cdnPath: "https://cdn.jsdelivr.net/gh/fghrsh/live2d_api/",
   waifuPath: "/webInfo/getWaifuJson",
   hitokoto: "https://v1.hitokoto.cn",
@@ -23,9 +24,9 @@ export default {
 
   friendWebName: "MOWEN",
   friendUrl: location.protocol + "//" + location.hostname + (location.port ? ':' + location.port : ''),
-  friendAvatar: "http://qncdn.zsawxotot.site/webAvatar/zhangshuang117553345219565.jpg",
+  friendAvatar: "http://qncdn.zsawxotof.site/webAvatar/zhangshuang117553345219565.jpg",
   friendIntroduction: "玄牝之门，是谓天地根。欢迎来到代码的世界！",
-  friendCover: "http://qncdn.zsawxotot.site/webBackgroundImage/zhangshuang11755334510431677.jpg",
+  friendCover: "http://qncdn.zsawxotof.site/webBackgroundImage/zhangshuang11755334510431677.jpg",
 
   before_color_list: ["black", "rgb(131, 123, 199)", "#ee7752", "#e73c7e", "#23a6d5", "#23d5ab"],
 
@@ -37,7 +38,8 @@ export default {
   before_color_2: "rgb(131, 123, 199)",
   after_color_2: "linear-gradient(45deg, #f43f3b, #ec008c)",
 
-  sortColor: ["linear-gradient(to right, #358bff, #15c6ff)",
+  sortColor: [
+    "linear-gradient(to right, #358bff, #15c6ff)",
     "linear-gradient(to right, #18e7ae, #1eebeb)",
     "linear-gradient(to right, #ff6655, #ffbf37)",
     "linear-gradient(120deg, rgba(255, 39, 232, 1) 0%, rgba(255, 128, 0, 1) 100%)",

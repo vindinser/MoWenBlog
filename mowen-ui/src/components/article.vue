@@ -502,7 +502,13 @@
               const md = new MarkdownIt({
                 html: true,
                 breaks: true
-              }).use(require('markdown-it-multimd-table'));
+              }).use(require('markdown-it-multimd-table'), {
+                multiline: true,   // 启用多行表格
+                rowspan: true,     // 启用行合并
+                headerless: true,  // 支持无表头表格
+                multibody: true,   // 支持多表格体
+                autolabel:  true
+              });
               // 使用markdown-it渲染
               const renderedHtml = md.render(this.article.articleContent);
               

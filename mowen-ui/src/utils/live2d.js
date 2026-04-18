@@ -199,34 +199,42 @@ function loadWidget(config) {
     fetch(waifuPath)
       .then(response => response.json())
       .then(result => {
-        window.addEventListener("mouseover", event => {
-          for (let {selector, text} of result.mouseover) {
-            if (!event.target.matches(selector)) continue;
-            text = randomSelection(text);
-            text = text.replace("{text}", event.target.innerText);
-            showMessage(text, 4000, 8);
-            return;
-          }
-        });
-        window.addEventListener("click", event => {
-          for (let {selector, text} of result.click) {
-            if (!event.target.matches(selector)) continue;
-            text = randomSelection(text);
-            text = text.replace("{text}", event.target.innerText);
-            showMessage(text, 4000, 8);
-            return;
-          }
-        });
-        result.seasons.forEach(({date, text}) => {
-          const now = new Date(),
-            after = date.split("-")[0],
-            before = date.split("-")[1] || after;
-          if ((after.split("/")[0] <= now.getMonth() + 1 && now.getMonth() + 1 <= before.split("/")[0]) && (after.split("/")[1] <= now.getDate() && now.getDate() <= before.split("/")[1])) {
-            text = randomSelection(text);
-            text = text.replace("{year}", now.getFullYear());
-            messageArray.push(text);
-          }
-        });
+        if (result.mouseover && Array.isArray(result.mouseover)) {
+          window.addEventListener("mouseover", event => {
+            for (let {selector, text} of result.mouseover) {
+              if (!event.target.matches(selector)) continue;
+              text = randomSelection(text);
+              text = text.replace("{text}", event.target.innerText);
+              showMessage(text, 4000, 8);
+              return;
+            }
+          });
+        }
+        
+        if (result.click && Array.isArray(result.click)) {
+          window.addEventListener("click", event => {
+            for (let {selector, text} of result.click) {
+              if (!event.target.matches(selector)) continue;
+              text = randomSelection(text);
+              text = text.replace("{text}", event.target.innerText);
+              showMessage(text, 4000, 8);
+              return;
+            }
+          });
+        }
+        
+        if (result.seasons && Array.isArray(result.seasons)) {
+          result.seasons.forEach(({date, text}) => {
+            const now = new Date(),
+              after = date.split("-")[0],
+              before = date.split("-")[1] || after;
+            if ((after.split("/")[0] <= now.getMonth() + 1 && now.getMonth() + 1 <= before.split("/")[0]) && (after.split("/")[1] <= now.getDate() && now.getDate() <= before.split("/")[1])) {
+              text = randomSelection(text);
+              text = text.replace("{year}", now.getFullYear());
+              messageArray.push(text);
+            }
+          });
+        }
       });
   })();
 

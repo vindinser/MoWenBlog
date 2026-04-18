@@ -1,5 +1,5 @@
 export default {
-  // 测试环境
+  // 开发环境
   baseURL: 'http://localhost:9528',
   webBaseURL: 'http://localhost',
   imURL: 'http://localhost:9529/im',
